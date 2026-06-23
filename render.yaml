@@ -5,13 +5,22 @@ databases:
 
 services:
   - type: web
-    runtime: static
-    name: my-static-site
-    buildCommand: ""
-    staticPublishPath: "."
-  envVars:
-      # This injects the database internal URL automatically into your app
-      - key: postgresql://delala_gutg_user:v6IZBxnJpYX0fxhwsNGabN8gIBp0AVVf@dpg-d8t7dcurnols73a8u7r0-a/delala_gutg
+    name: digital-delala
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: gunicorn your_project_name.wsgi:application
+
+    envVars:
+      - key: DATABASE_URL
         fromDatabase:
           name: delala
           property: connectionString
+
+      - key: DJANGO_SETTINGS_MODULE
+        value: your_project_name.settings
+
+      - key: DEBUG
+        value: "False"
