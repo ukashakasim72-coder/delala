@@ -1,6 +1,17 @@
+databases:
+  - name: delala
+    databaseName: delala_gutg
+    plan: free
+
 services:
   - type: web
     runtime: static
     name: my-static-site
     buildCommand: ""
     staticPublishPath: "."
+  envVars:
+      # This injects the database internal URL automatically into your app
+      - key: postgresql://delala_gutg_user:v6IZBxnJpYX0fxhwsNGabN8gIBp0AVVf@dpg-d8t7dcurnols73a8u7r0-a/delala_gutg
+        fromDatabase:
+          name: delala
+          property: connectionString
