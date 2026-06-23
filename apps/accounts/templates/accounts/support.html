@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Agent Support - Digital Delala{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+
+        <!-- Heading -->
+        <h1 class="text-2xl font-bold text-black-800 mb-1">
+            Customer Support
+        </h1>
+        <p class="text-sm text-gray-400 mb-6">
+            We're here to help. Contact our support desk using any of the channels below.
+            We usually respond within minutes.
+        </p>
+
+        <!-- DIRECT COMMUNICATION -->
+        <div class="mb-6">
+            <h2 class="text-xs font-semibold text-black-400 uppercase tracking-wider mb-3">
+                DIRECT COMMUNICATION
+            </h2>
+
+            <!-- Phone -->
+            <a href="tel:+251946464070"
+               class="flex items-start gap-3 sm:gap-4 mb-4 group">
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0 transition group-hover:bg-green-200">
+                    <i class="fas fa-phone-alt text-lg"></i>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-black-800">
+                        Phone Number
+                    </p>
+
+                    <p class="text-green-500 font-medium">
+                        +251 94 646 4070
+                    </p>
+
+                    <p class="text-xs text-gray-400">
+                        Tap to initiate call • Hold to copy value
+                    </p>
+                </div>
+            </a>
+
+            <!-- WhatsApp -->
+            <a href="https://wa.me/251946464070"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="flex items-start gap-3 sm:gap-4 mb-4 group">
+
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0 transition group-hover:bg-green-200">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-gray-800">
+                        WhatsApp Desk
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Instant Messaging Chatbot
+                    </p>
+                </div>
+            </a>
+
+            <!-- Telegram -->
+            <a href="https://t.me/YOUR_CHANNEL_USERNAME"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="flex items-start gap-3 sm:gap-4 group">
+
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0 transition group-hover:bg-green-200">
+                    <i class="fab fa-telegram-plane text-lg"></i>
+                </div>
+
+                <div>
+                    <p class="font-semibold text-gray-800">
+                        Telegram channel
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Join our information network
+                    </p>
+                </div>
+            </a>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+

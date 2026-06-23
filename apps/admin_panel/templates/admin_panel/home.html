@@ -1,0 +1,90 @@
+{% extends 'adminbase.html' %}
+
+{% block title %}Admin Dashboard - Monthly Report{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <!-- Header -->
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+    <p class="text-gray-500 mb-6 sm:mb-8">Welcome back! Here's what's happening on your platform.</p>
+
+    <!-- Action required card (responsive) -->
+    <div class="bg-white rounded-2xl shadow-md p-4 sm:p-6 mb-8 sm:mb-10">
+        <div class="flex items-center gap-2 text-orange-600 font-bold mb-3 sm:mb-4">
+            <i class="fas fa-exclamation-triangle"></i> Action required
+        </div>
+        <div class="bg-orange-50 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <i class="fas fa-hourglass-half text-3xl sm:text-4xl text-orange-400"></i>
+                <div>
+                    <p class="text-gray-600 font-medium">Pending listings</p>
+                    <p class="text-2xl sm:text-3xl font-bold">{{ pending_listings|default:"24" }}</p>
+                    <p class="text-gray-400 text-xs sm:text-sm">Waiting for approval</p>
+                </div>
+            </div>
+            <a href="#" class="bg-white text-green-600 font-semibold px-5 sm:px-6 py-2 rounded-xl shadow hover:bg-gray-50 transition flex items-center gap-2 text-sm sm:text-base">
+                <i class="fas fa-eye"></i> Review now
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview statistics (6 cards, responsive grid) -->
+    <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">Overview</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Total Listings -->
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow p-4 sm:p-5 flex justify-between items-center">
+            <i class="fas fa-th-large text-2xl sm:text-3xl text-green-600"></i>
+            <div class="text-right">
+                <p class="text-gray-500 text-sm sm:text-base">Total Listings</p>
+                <p class="text-2xl sm:text-3xl font-bold text-green-600">{{ total_listings|default:"0" }}</p>
+                <p class="text-xs text-gray-400">All listings created</p>
+            </div>
+        </div>
+        <!-- Total Customers -->
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow p-4 sm:p-5 flex justify-between items-center">
+            <i class="fas fa-users text-2xl sm:text-3xl text-blue-500"></i>
+            <div class="text-right">
+                <p class="text-gray-500 text-sm sm:text-base">Total Customers</p>
+                <p class="text-2xl sm:text-3xl font-bold text-blue-600">{{ total_customers|default:"0" }}</p>
+                <p class="text-xs text-gray-400">Users browsing</p>
+            </div>
+        </div>
+        <!-- Total Agents -->
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow p-4 sm:p-5 flex justify-between items-center">
+            <i class="fas fa-user-tie text-2xl sm:text-3xl text-purple-500"></i>
+            <div class="text-right">
+                <p class="text-gray-500 text-sm sm:text-base">Total Agents</p>
+                <p class="text-2xl sm:text-3xl font-bold text-purple-600">{{ total_agents|default:"0" }}</p>
+                <p class="text-xs text-gray-400">Registered on platform</p>
+            </div>
+        </div>
+        <!-- Active Listings -->
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow p-4 sm:p-5 flex justify-between items-center">
+            <i class="fas fa-eye text-2xl sm:text-3xl text-yellow-500"></i>
+            <div class="text-right">
+                <p class="text-gray-500 text-sm sm:text-base">Active Listings</p>
+                <p class="text-2xl sm:text-3xl font-bold text-yellow-600">{{ active_listings|default:"0" }}</p>
+                <p class="text-xs text-gray-400">Visible to customers</p>
+            </div>
+        </div>
+        <!-- Listings Today -->
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow p-4 sm:p-5 flex justify-between items-center">
+            <i class="fas fa-chart-line text-2xl sm:text-3xl text-red-400"></i>
+            <div class="text-right">
+                <p class="text-gray-500 text-sm sm:text-base">Listings Today</p>
+                <p class="text-2xl sm:text-3xl font-bold text-red-500">{{ listings_today|default:"0" }}</p>
+                <p class="text-xs text-gray-400">New submissions</p>
+            </div>
+        </div>
+        <!-- Approved Today -->
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow p-4 sm:p-5 flex justify-between items-center">
+            <i class="fas fa-check-circle text-2xl sm:text-3xl text-green-700"></i>
+            <div class="text-right">
+                <p class="text-gray-500 text-sm sm:text-base">Approved Today</p>
+                <p class="text-2xl sm:text-3xl font-bold text-green-700">{{ approved_today|default:"0" }}</p>
+                <p class="text-xs text-gray-400">Approved & published</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-8 shadow-sm">
+    <!-- MAIN GRID: Summary cards -->
+    <div class="grid grid-cols-2 gap-3 md:gap-6 mb-8">
+        <!-- 1. Active rent (green toggle ON) -->
+        <a href="#" class="block cursor-pointer transition-transform hover:scale-105">
+            <div class="bg-orange-500 p-3 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <div class="text-[#FFFFFF] text-4xl md:text-6xl"><i class="fa-solid fa-house-chimney"></i></div>
+                <div class="flex-1">
+                    <h3 class="text-white font-bold text-xs md:text-lg">Active rent</h3>
+                    <p class="text-white text-2xl md:text-4xl font-bold">{{ active_rent }}</p>
+                    <p class="text-white text-[8px] md:text-[10px] hidden sm:block">Properties for rent</p>
+                </div>
+                <!--  Green toggle‑on (exactly as in listing.html for active published properties) -->
+                <div class="text-green-500">
+                    <i class="fas fa-toggle-on text-2xl md:text-3xl"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- 2. inactive Rent (gray toggle OFF) -->
+        <a href="#" class="block cursor-pointer transition-transform hover:scale-105">
+            <div class="bg-orange-500 p-3 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <div class="text-white text-4xl md:text-6xl"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="flex-1">
+                    <h3 class="text-white font-bold text-xs md:text-lg">Successful rent</h3>
+                    <p class="text-white text-2xl md:text-4xl font-bold">{{ successful_rent }}</p>
+                    <p class="text-white text-[8px] md:text-[10px] hidden sm:block">Properties rented</p>
+                </div>
+                <!--  Gray toggle‑off (exactly as in listing.html for inactive published properties) -->
+                <div class="text-white">
+                    <i class="fas fa-toggle-off text-2xl md:text-3xl"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- 3. Active Sale (green toggle ON) -->
+        <a href="#" class="block cursor-pointer transition-transform hover:scale-105">
+            <div class="bg-green-500 p-3 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <div class="text-blue-800 text-4xl md:text-6xl"><i class="fa-solid fa-house-chimney"></i></div>
+                <div class="flex-1">
+                    <h3 class="text-white font-bold text-xs md:text-lg">Active Sale</h3>
+                    <p class="text-white text-2xl md:text-4xl font-bold">{{ active_sale }}</p>
+                    <p class="text-white text-[8px] md:text-[10px] hidden sm:block">Properties for sale</p>
+                </div>
+                <!--  Green toggle‑on (exactly as in listing.html for active published properties) -->
+                <div class="text-white">
+                    <i class="fas fa-toggle-on text-2xl md:text-3xl"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- 4. inactive Sale (gray toggle OFF) -->
+        <a href="#" class="block cursor-pointer transition-transform hover:scale-105">
+            <div class="bg-green-500 p-3 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <div class="text-blue-800 text-4xl md:text-6xl"><i class="fa-solid fa-award"></i></div>
+                <div class="flex-1">
+                    <h3 class="text-white font-bold text-xs md:text-lg">Successful sale</h3>
+                    <p class="text-white text-2xl md:text-4xl font-bold">{{ successful_sale }}</p>
+                    <p class="text-white text-[8px] md:text-[10px] hidden sm:block">Properties sold</p>
+                </div>
+                <!--  Gray toggle‑off (exactly as in listing.html for inactive published properties) -->
+                <div class="text-white">
+                    <i class="fas fa-toggle-off text-2xl md:text-3xl"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- 5. Total published -->
+        <a href="#" class="block cursor-pointer transition-transform hover:scale-105">
+            <div class="bg-green-200 p-3 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <div class="text-[#E28712] text-4xl md:text-6xl"><i class="fa-solid fa-eye"></i></div>
+                <div class="flex-1">
+                    <h3 class="text-gray-800 font-bold text-xs md:text-lg">Total published</h3>
+                    <p class="text-[#E28712] text-2xl md:text-4xl font-bold">{{ total_views }}</p>
+                    <p class="text-gray-500 text-[8px] md:text-[10px] hidden sm:block">Total property views</p>
+                </div>
+                <div class="w-4 hidden md:block"></div>
+            </div>
+        </a>
+
+        <!-- 6. Total Pending -->
+        <a href="#" class="block cursor-pointer transition-transform hover:scale-105">
+            <div class="bg-yellow-200 p-3 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                <div class="text-[#E28712] text-4xl md:text-6xl"><i class="fa-solid fa-arrows-rotate"></i></div>
+                <div class="flex-1">
+                    <h3 class="text-gray-800 font-bold text-xs md:text-lg">Total Pending</h3>
+                    <p class="text-black text-2xl md:text-4xl font-bold">{{ pending }}</p>
+                    <p class="text-gray-500 text-[8px] md:text-[10px] hidden sm:block">Waiting for approval</p>
+                </div>
+                <div class="w-4 hidden md:block"></div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Footer with Signout button -->
+    <div class="flex items-center justify-between gap-4 mt-8">
+        <a href="{% url 'logout' %}" class="bg-red-400 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-lg text-sm hover:bg-green-500 transition cursor-pointer">
+            <span class="font-bold">Signout</span>
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+        </a>
+        <a href="{% url 'support' %}" class="bg-green-500 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-lg text-sm hover:bg-green-500 transition cursor-pointer">
+            <i class="fa-solid fa-headset text-xs"></i>
+            <span class="font-bold">Support</span>
+        </a>
+    </div>
+</div>
+
+
+{% endblock %}

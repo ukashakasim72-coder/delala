@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Listings - Digital Delala{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-gray-800 mb-0.5">My Listings</h1>
+
+    <!-- Search bar -->
+    <div class="mb-2 flex justify-start">
+        <input type="text" id="searchInput" placeholder="Search"
+               class="w-80 pl-11 pr-4 py-2 bg-white border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-green-400 outline-none text-sm">
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Image</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Property</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Type</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Price</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Create at</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Status</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-black-500 uppercase">Action</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                {% for listing in listings %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        {% if listing.image %}
+                            <img src="{{ listing.image.url }}" alt="{{ listing.property }}" class="w-10 h-10 rounded object-cover">
+                        {% else %}
+                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                                No img
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ listing.property }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ listing.type }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ listing.price }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{{ listing.created_at }}</td>
+                    <td class="px-4 py-2 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full
+                            {% if listing.status == 'Published' %}bg-green-200 text-green-800
+                            {% elif listing.status == 'Rejected' %}bg-red-200 text-red-800
+                            {% else %}bg-yellow-200 text-yellow-800{% endif %}">
+                            {{ listing.status }}
+                        </span>
+                    </td>
+                    <td class="px-0.5 py-2 whitespace-nowrap text-sm text-gray-500">
+                        <div class="flex space-x-4">
+                            <div class="flex space-x-6">
+                                <a href="{% url 'property_detail' listing.id %}" title="View" class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                    <i class="fa-solid fa-eye text-lg"></i>
+                                </a>
+                                {% if listing.status == 'Published' %}
+                                    {% if listing.is_active %}
+                                        <a href="{% url 'toggle_active_property' listing.id %}"
+                                           title="Deactivate listing"
+                                           class="cursor-pointer text-[#1DBF73] hover:text-emerald-700 transition-colors"
+                                           onclick="return confirm('Hide this listing? (Status will stay Published)')">
+                                            <i class="fas fa-toggle-on text-2xl"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'toggle_active_property' listing.id %}"
+                                           title="Activate listing"
+                                           class="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors"
+                                           onclick="return confirm('Make this listing public? (Status will stay Published)')">
+                                            <i class="fas fa-toggle-off text-2xl"></i>
+                                        </a>
+                                    {% endif %}
+                                {% elif listing.status == 'Pending' or listing.status == 'Rejected' %}
+                                    <div title="{% if listing.status == 'Rejected' %}Listing was rejected by admin{% else %}Toggle locked until Admin publishes this listing{% endif %}"
+                                         class="cursor-not-allowed opacity-40">
+                                        <i class="fas fa-toggle-off text-2xl text-gray-300"></i>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Edit button: hidden when status is Published -->
+                                {% if listing.status != 'Published' %}
+                                    <a href="{% url 'edit_property' listing.id %}" title="Edit" class="cursor-pointer text-yellow-500 hover:text-yellow-700">
+                                        <i class="fa-solid fa-pencil text-lg"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-4 py-4 text-center text-gray-500">No properties added yet. <a href="{% url 'add_property' %}" class="text-green-600">Add your first property</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center space-x-4 mt-6">
+        <span>1</span> | <a href="#" class="text-gray-700">2</a> | <a href="#" class="text-gray-700">3</a> | <a href="#" class="text-gray-700">20</a>
+    </div>
+</div>
+
+<!-- Search functionality: filters rows by any column text -->
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.getElementById('tableBody');
+    if (searchInput && tableBody) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                // Skip the "no properties" row (colspan=7) – it has no cells
+                if (row.cells.length === 0 || row.cells[0].colSpan === 7) continue;
+                let found = false;
+                // Loop through all cells in the row (skip the action cell? but we include all)
+                for (let j = 0; j < row.cells.length; j++) {
+                    const cellText = row.cells[j].innerText.toLowerCase();
+                    if (cellText.includes(searchTerm)) {
+                        found = true;
+                        break;
+                    }
+                }
+                row.style.display = found ? '' : 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
+
+
+

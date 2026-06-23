@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Property Detail - {{ property.property_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Main Image and Basic Info Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Main Image Area -->
+        <div class="lg:col-span-1">
+            <div class="rounded-2xl overflow-hidden bg-gray-100 border border-gray-200">
+                {% if property.image %}
+                    <img id="mainFeaturedImage" src="{{ property.image.url }}" alt="{{ property.property_name }}" class="w-full h-100 object-cover">
+                {% else %}
+                    <div id="mainFeaturedImagePlaceholder" class="w-full h-100 bg-gray-100 flex items-center justify-center text-gray-400">
+                       <img id="mainFeaturedImage" src="" alt="Main image" class="w-full h-100 object-cover hidden">
+                {% endif %}
+            </div>
+
+            <!-- Thumbnails (additional images) -->
+            <!-- Thumbnails (additional images) -->
+            {% if additional_images %}
+                <div class="flex gap-2 mt-4 overflow-x-auto custom-scrollbar pb-2">
+                    {% for img in additional_images %}
+                        <div class="thumbnail relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-[#1DBF73] transition"
+                             data-image-url="{{ img.image.url }}"
+                             data-caption="{{ img.caption }}">
+                            <img src="{{ img.image.url }}" alt="Thumb" class="w-full h-full object-cover">
+                            {% if img.caption %}
+                            <span class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-[#1DBF73] text-[9px] font-semibold px-1 py-0.5 truncate">
+                                {{ img.caption }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+
+
+        <!-- Property Details -->
+        <div class="lg:col-span-2 space-y-4">
+            <h1 class="text-3xl font-bold text-gray-800">{{ property.property_name }}</h1>
+            <div class="flex flex-wrap gap-4 text-sm">
+                <span class="bg-[#1DBF73]/10 text-[#1DBF73] px-3 py-1 rounded-full">{{ property.get_property_type_display }}</span>
+                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{{ property.bedrooms }} beds</span>
+                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{{ property.bathrooms }} baths</span>
+                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{{ property.square_meters }} m²</span>
+            </div>
+            <p class="text-3xl font-bold text-[#1DBF73]">ETB {{ property.price|floatformat:0 }}</p>
+            <div class="border-t pt-4">
+                <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2"></i>{{ property.location }}</p>
+                <p class="text-gray-600 mt-2"><i class="far fa-calendar-alt mr-2"></i>Listed on {{ property.created_at|date:"F d, Y" }}</p>
+                <p class="text-gray-600"><i class="fas fa-eye mr-2"></i>{{ property.views }} views</p>
+            </div>
+            <div class="border-t pt-4">
+                <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                    <i class="fas fa-file-alt text-[#1DBF73]"></i> Description
+                </h3>
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
+                    <p class="text-gray-700 leading-relaxed break-words">
+                        {{ property.description|default:"No description provided." }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agent Info Section -->
+    <div class="bg-gray-50 rounded-2xl p-6 mt-8">
+        <h3 class="font-bold text-xl mb-4">Agent Information</h3>
+        <div class="flex items-center gap-4">
+            {% if profile_avatar_url %}
+                <img src="{{ profile_avatar_url }}" alt="{{ agent_full_name }}" class="w-16 h-16 rounded-full object-cover">
+            {% else %}
+                <div class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center text-gray-500">
+                    <i class="fas fa-user text-2xl"></i>
+                </div>
+            {% endif %}
+            <div>
+                <p class="font-semibold text-gray-800">{{ agent_full_name }}</p>
+                <p class="text-gray-600 text-sm"><i class="fas fa-envelope mr-1"></i>{{ agent_email }}</p>
+                <p class="text-gray-600 text-sm"><i class="fas fa-phone mr-1"></i>{{ agent_phone }}</p>
+                <p class="text-gray-600 text-sm"><i class="fas fa-location-dot mr-1"></i>{{ agent_location }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Listings Button -->
+    <div class="mt-8">
+        <a href="{% url 'listing' %}" class="inline-flex items-center gap-2 text-[#1DBF73] hover:underline">
+            <i class="fas fa-arrow-left"></i> Back to My Listings
+        </a>
+    </div>
+</div>
+
+<!-- Image Switcher Script -->
+<script>
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.addEventListener('click', function () {
+            const mainImg = document.getElementById('mainFeaturedImage');
+            const mainCaption = document.getElementById('mainCaption');
+
+            mainImg.style.opacity = '0';
+            setTimeout(() => {
+                mainImg.src = this.dataset.imageUrl;
+                mainImg.style.opacity = '1';
+
+                // Update caption
+                const cap = this.dataset.caption || '';
+                if (mainCaption) {
+                    if (cap) {
+                        mainCaption.textContent = cap;
+                        mainCaption.classList.remove('hidden');
+                    } else {
+                        mainCaption.classList.add('hidden');
+                    }
+                }
+            }, 200);
+
+            document.querySelectorAll('.thumbnail').forEach(t => {
+                t.classList.remove('border-[#1DBF73]');
+                t.classList.add('border-transparent');
+            });
+            this.classList.remove('border-transparent');
+            this.classList.add('border-[#1DBF73]');
+        });
+    });
+</script>
+<script>
+    <!-- Main image with caption overlay -->
+<div class="lg:col-span-1">
+    <div class="rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 relative">
+        {% if additional_images %}
+            <img id="mainFeaturedImage"
+                 src="{{ additional_images.0.image.url }}"
+                 alt="{{ property.property_name }}"
+                 class="w-full h-80 object-cover">
+            {% if additional_images.0.caption %}
+            <span id="mainCaption"
+                  class="absolute bottom-3 left-3 bg-black bg-opacity-50 text-[#1DBF73] text-xs font-semibold px-3 py-1 rounded-full">
+                {{ additional_images.0.caption }}
+            </span>
+            {% else %}
+            <span id="mainCaption" class="absolute bottom-3 left-3 bg-black bg-opacity-50 text-[#1DBF73] text-xs font-semibold px-3 py-1 rounded-full hidden"></span>
+            {% endif %}
+        {% elif property.image %}
+            <img id="mainFeaturedImage"
+                 src="{{ property.image.url }}"
+                 alt="{{ property.property_name }}"
+                 class="w-full h-80 object-cover">
+            <span id="mainCaption" class="hidden"></span>
+        {% else %}
+            <div class="w-full h-80 bg-gray-100 flex items-center justify-center text-gray-400">
+                <i class="fas fa-image text-5xl"></i>
+            </div>
+            <span id="mainCaption" class="hidden"></span>
+        {% endif %}
+    </div>
+
+    <!-- Thumbnails -->
+    {% if additional_images %}
+        <div class="flex gap-2 mt-4 overflow-x-auto custom-scrollbar pb-2">
+            {% for img in additional_images %}
+                <div class="thumbnail relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-[#1DBF73] transition"
+                     data-image-url="{{ img.image.url }}"
+                     data-caption="{{ img.caption }}">
+                    <img src="{{ img.image.url }}" alt="Thumb" class="w-full h-full object-cover">
+                    {% if img.caption %}
+                    <span class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-[#1DBF73] text-[9px] font-semibold px-1 py-0.5 truncate text-center">
+                        {{ img.caption }}
+                    </span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+</script>
+
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1DBF73; border-radius: 10px; }
+    #mainFeaturedImage { transition: opacity 0.2s ease-in-out; }
+</style>
+{% endblock %}

@@ -1,0 +1,218 @@
+<form method="post" e{% extends 'adminbase.html' %}
+
+{% block title %}Edit Property - Digital Delala{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-[2rem] p-6 md:p-10 shadow-sm border border-gray-50">
+
+    <!-- Header -->
+    <div class="mb-8 text-center md:text-left">
+        <div class="flex items-center gap-3 mb-2 justify-center md:justify-start">
+            <div class="text-[#1DBF73] text-3xl"><i class="fa-solid fa-circle-nodes"></i></div>
+            <h2 class="text-3xl font-black text-[#0B1C3F] tracking-tight">Edit Property</h2>
+        </div>
+        <div class="h-1.5 w-20 bg-[#1DBF73] rounded-full mx-auto md:mx-0 mb-4"></div>
+        <p class="text-gray-500 font-medium">Update listing information below.</p>
+    </div>
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data"
+          action="{% url 'admin_panel:admin_edit_property' property.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            <!-- Property Name -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Property Name *</label>
+                <input type="text" name="property_name" required
+                       value="{{ property.property_name }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. Modern Luxury Villa">
+            </div>
+
+            <!-- Price -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Price *</label>
+                <input type="text" name="price" required
+                       value="{{ property.price }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. 18,000 birr">
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Type *</label>
+                <select name="type" required
+                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all appearance-none">
+                    <option value="rent" {% if property.property_type == 'rent' %}selected{% endif %}>For rent</option>
+                    <option value="sale" {% if property.property_type == 'sale' %}selected{% endif %}>For sale</option>
+                </select>
+            </div>
+
+            <!-- Location -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Location *</label>
+                <input type="text" name="location" required
+                       value="{{ property.location }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. Bole, Addis Ababa">
+            </div>
+
+            <!-- Bedrooms -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bedrooms *</label>
+                <input type="text" name="bedrooms" required
+                       value="{{ property.bedrooms }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <!-- Bathrooms -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bathrooms *</label>
+                <input type="text" name="bathrooms" required
+                       value="{{ property.bathrooms }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <!-- Square Meters -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Square Meters *</label>
+                <input type="text" name="square_meters" required
+                       value="{{ property.square_meters }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. 250">
+            </div>
+
+            <!-- Description -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Description</label>
+                <textarea name="description" rows="4"
+                          class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">{{ property.description }}</textarea>
+            </div>
+
+            <!-- Images -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-3 ml-1">Property Images</label>
+
+                <!-- Existing images preview -->
+                {% if property.additional_images.all %}
+                <div class="flex gap-3 overflow-x-auto pb-2 mb-4">
+                    {% for img in property.additional_images.all %}
+                    <img src="{{ img.image.url }}" alt="Existing"
+                         class="w-24 h-24 flex-shrink-0 object-cover rounded-lg border-2 border-[#1DBF73]">
+                    {% endfor %}
+                </div>
+                <p class="text-xs text-gray-400 mb-4 ml-1">Existing images shown above. Upload new ones below to replace/add.</p>
+                {% elif property.image %}
+                <div class="flex gap-3 mb-4">
+                    <img src="{{ property.image.url }}" alt="Existing"
+                         class="w-24 h-24 object-cover rounded-lg border-2 border-[#1DBF73]">
+                </div>
+                <p class="text-xs text-gray-400 mb-4 ml-1">Existing image shown above. Upload a new one below to replace it.</p>
+                {% endif %}
+
+                <!-- 4 upload fields -->
+                <div class="grid grid-cols-2 gap-4">
+
+                    <!-- Front image -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Front image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition cursor-pointer"
+                             onclick="document.getElementById('front_img').click()">
+                            <div id="front_img_preview">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-1"></i>
+                                <p class="text-xs text-gray-500">Click to upload</p>
+                            </div>
+                            <input type="file" id="front_img" name="add_img_1" accept="image/*" class="hidden"
+                                   onchange="previewImg(this, 'front_img_preview')">
+                            <button type="button"
+                                    onclick="event.stopPropagation(); document.getElementById('front_img').click()"
+                                    class="mt-2 bg-gray-100 px-3 py-1 rounded-lg text-xs">Choose File</button>
+                        </div>
+                    </div>
+
+                    <!-- Back image -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Back image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition cursor-pointer"
+                             onclick="document.getElementById('back_img').click()">
+                            <div id="back_img_preview">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-1"></i>
+                                <p class="text-xs text-gray-500">Click to upload</p>
+                            </div>
+                            <input type="file" id="back_img" name="add_img_2" accept="image/*" class="hidden"
+                                   onchange="previewImg(this, 'back_img_preview')">
+                            <button type="button"
+                                    onclick="event.stopPropagation(); document.getElementById('back_img').click()"
+                                    class="mt-2 bg-gray-100 px-3 py-1 rounded-lg text-xs">Choose File</button>
+                        </div>
+                    </div>
+
+                    <!-- Right side image -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Right side image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition cursor-pointer"
+                             onclick="document.getElementById('right_img').click()">
+                            <div id="right_img_preview">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-1"></i>
+                                <p class="text-xs text-gray-500">Click to upload</p>
+                            </div>
+                            <input type="file" id="right_img" name="add_img_3" accept="image/*" class="hidden"
+                                   onchange="previewImg(this, 'right_img_preview')">
+                            <button type="button"
+                                    onclick="event.stopPropagation(); document.getElementById('right_img').click()"
+                                    class="mt-2 bg-gray-100 px-3 py-1 rounded-lg text-xs">Choose File</button>
+                        </div>
+                    </div>
+
+                    <!-- Left side image -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Left side image</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition cursor-pointer"
+                             onclick="document.getElementById('left_img').click()">
+                            <div id="left_img_preview">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-1"></i>
+                                <p class="text-xs text-gray-500">Click to upload</p>
+                            </div>
+                            <input type="file" id="left_img" name="add_img_4" accept="image/*" class="hidden"
+                                   onchange="previewImg(this, 'left_img_preview')">
+                            <button type="button"
+                                    onclick="event.stopPropagation(); document.getElementById('left_img').click()"
+                                    class="mt-2 bg-gray-100 px-3 py-1 rounded-lg text-xs">Choose File</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-row gap-4 mt-10">
+            <button type="submit"
+                    class="flex-1 bg-[#1DBF73] hover:bg-[#16a363] text-white font-bold py-3 rounded-xl shadow transition-all text-base active:scale-95">
+                Update Property
+            </button>
+            <a href="{% if next == 'manage' %}{% url 'admin_panel:manage_listings' %}{% else %}{% url 'admin_panel:approve_listings' %}{% endif %}"
+               class="flex-1 bg-white border-2 border-gray-200 text-gray-700 font-bold py-3 rounded-xl text-center hover:bg-gray-50 transition-all text-base">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+function previewImg(input, previewId) {
+    const previewDiv = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewDiv.innerHTML = `<img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg">`;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %}nctype="multipart/form-data" action="{% url 'admin_panel:admin_edit_property' property.id %}" class="space-y-6">

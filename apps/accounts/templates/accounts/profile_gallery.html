@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-3xl p-8 shadow-sm text-center">
+    <h2 class="text-2xl font-bold mb-4">Profile Image Gallery</h2>
+    <!-- Hidden file input – triggered by clicking the label -->
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-6">
+            <label for="avatar-upload" class="cursor-pointer block w-40 h-40 rounded-full mx-auto overflow-hidden border-4 border-[#1DBF73] relative group">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="Profile picture" class="w-full h-full object-cover">
+                {% else %}
+                    <!-- Placeholder circle with camera icon -->
+                    <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                        <i class="fas fa-camera text-4xl"></i>
+                    </div>
+                {% endif %}
+                <!-- Hover overlay to hint "click to change" -->
+                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-sm font-medium">
+                    <i class="fas fa-pen mr-1"></i> Change
+                </div>
+            </label>
+            <!-- Hidden file input -->
+            <input type="file" name="avatar" id="avatar-upload" accept="image/*" class="hidden" onchange="this.form.submit()">
+        </div>
+        <!-- rest of your form fields... -->
+    </form>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="submit" class="bg-[#1DBF73] text-white px-4 py-2 rounded-full hover:bg-[#16a363]">Upload New Image</button>
+    </form>
+    <div class="mt-6">
+        <a href="{% url 'profile' %}" class="text-[#1DBF73] hover:underline">← Back to Profile</a>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Digital Delala{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .nav-active { color: #10b981; }
+        .nav-active i { color: #10b981; }
+    </style>
+</head>
+<body class="bg-white-200 min-h-screen pb-6">
+
+    <!-- Top Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50 bg-green-500 border-gray-500">
+        <div class="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
+
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <img src="{% static 'images/delala_link_logo.png' %}" alt="Digital Delala" class="h-9 w-auto">
+            </div>
+
+            <!-- Nav Links -->
+            <div class="flex items-center gap-5">
+                <a href="{% url 'customer_panel:home' %}"
+                   class="flex flex-col items-center text-xs gap-0.5 {% if request.resolver_match.url_name == 'home' %}nav-active text-green-500{% else %}text-gray-500 hover:text-green-500{% endif %}">
+                    <i class="fas fa-home text-base"></i>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'customer_panel:saved' %}"
+                   class="flex flex-col items-center text-xs gap-0.5 {% if request.resolver_match.url_name == 'saved' %}nav-active text-green-500{% else %}text-gray-400 hover:text-green-500{% endif %}">
+                    <i class="fas fa-bookmark text-base"></i>
+                    <span>Bookmarks</span>
+                </a>
+                <a href="{% url 'customer_panel:support' %}"
+                   class="flex flex-col items-center text-xs gap-0.5 {% if request.resolver_match.url_name == 'support' %}nav-active text-green-500{% else %}text-gray-400 hover:text-green-500{% endif %}">
+                    <i class="fas fa-headset text-base"></i>
+                    <span>Support</span>
+                </a>
+            </div>
+
+            <!-- Avatar -->
+            <a href="{% url 'customer_panel:profile' %}">
+                {% if request.user.is_authenticated %}
+                    {% with request.user.profile as p %}
+                        {% if p.avatar %}
+                            <img src="{{ p.avatar.url }}"
+                                 class="w-8 h-8 rounded-full object-cover border-2 border-green-400">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm border-2 border-green-300">
+                                {{ request.user.email|first|upper }}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main class="max-w-5xl mx-auto px-4 py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-wrap justify-between items-center gap-6">
+                <a href="https://play.google.com/store/apps/details?id=YOUR_APP_PACKAGE_NAME"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="flex items-center gap-2 hover:opacity-80 transition">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                         alt="Get it on Google Play" class="h-10">
+                </a>
+                <div class="flex gap-6">
+                    <a href="#" class="text-green-500 hover:text-green-500 text-sm">Terms of Services</a>
+                    <a href="#" class="text-green-500 hover:text-green-500 text-sm">Privacy policy</a>
+                </div>
+            </div>
+            <div class="mt-8 text-center text-sm text-gray-500">
+                {% now "Y" %} © Delala link. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</html>
+

@@ -1,0 +1,195 @@
+{% extends 'adminbase.html' %}
+
+{% block title %}{% if agent %}Edit Agent{% else %}Create Agent Account{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">{% if agent %}Edit Agent{% else %}Create account{% endif %}</h1>
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="flex-1">
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">{% if agent %}Edit agent account{% else %}Create agent account{% endif %}</h2>
+                <p class="text-gray-500 text-sm mb-6">
+                    {% if agent %}Update the details below{% else %}Fill in the details below to create a new agent account{% endif %}
+                </p>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Left column -->
+                        <div>
+
+                            <!-- Full name -->
+                            <label class="block text-gray-700 font-medium mb-1">Full name</label>
+                            <input type="text" name="full_name" value="{{ full_name|default:'' }}" placeholder="Enter full name"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500
+                                   {% if errors.full_name %}border-red-400{% endif %}">
+                            {% if errors.full_name %}
+                                <p class="text-red-500 text-xs mb-3">{{ errors.full_name }}</p>
+                            {% else %}
+                                <div class="mb-3"></div>
+                            {% endif %}
+
+                            <!-- Phone -->
+                            <label class="block text-gray-700 font-medium mb-1">Phone</label>
+                            <input type="tel" name="phone" value="{{ phone|default:'' }}" placeholder="Enter phone number"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500
+                                   {% if errors.phone %}border-red-400{% endif %}">
+                            {% if errors.phone %}
+                                <p class="text-red-500 text-xs mb-3">{{ errors.phone }}</p>
+                            {% else %}
+                                <div class="mb-3"></div>
+                            {% endif %}
+
+                            <!-- Location -->
+                            <label class="block text-gray-700 font-medium mb-1">Location</label>
+                            <input type="text" name="location" value="{{ location|default:'' }}" placeholder="Enter location"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500">
+                            <div class="mb-3"></div>
+
+                            <!-- Password -->
+                            <label class="block text-gray-700 font-medium mb-1">Password</label>
+                            <input type="password" name="password" placeholder="Enter Password"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500
+                                   {% if errors.password %}border-red-400{% endif %}">
+                            {% if errors.password %}
+                                <p class="text-red-500 text-xs mb-3">{{ errors.password }}</p>
+                            {% else %}
+                                <div class="mb-3"></div>
+                            {% endif %}
+
+                            <!-- Confirm password -->
+                            <label class="block text-gray-700 font-medium mb-1">Confirm password</label>
+                            <input type="password" name="confirm_password" placeholder="Confirm password"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500
+                                   {% if errors.confirm_password %}border-red-400{% endif %}">
+                            {% if errors.confirm_password %}
+                                <p class="text-red-500 text-xs mb-3">{{ errors.confirm_password }}</p>
+                            {% else %}
+                                <div class="mb-3"></div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Right column -->
+                        <div>
+
+                            <!-- Email -->
+                            <label class="block text-gray-700 font-medium mb-1">Email</label>
+                            <input type="email" name="email" value="{{ email|default:'' }}" placeholder="Enter email address"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500
+                                   {% if errors.email %}border-red-400{% endif %}">
+                            {% if errors.email %}
+                                <p class="text-red-500 text-xs mb-3">{{ errors.email }}</p>
+                            {% else %}
+                                <div class="mb-3"></div>
+                            {% endif %}
+
+                            <!-- WhatsApp -->
+                            <label class="block text-gray-700 font-medium mb-1">WhatsApp number</label>
+                            <input type="text" name="whatsapp" value="{{ whatsapp|default:'' }}" placeholder="Enter WhatsApp number"
+                                   class="w-full border rounded-lg px-4 py-2 mb-1 focus:ring-green-500 focus:border-green-500
+                                   {% if errors.whatsapp %}border-red-400{% endif %}">
+                            {% if errors.whatsapp %}
+                                <p class="text-red-500 text-xs mb-3">{{ errors.whatsapp }}</p>
+                            {% else %}
+                                <div class="mb-3"></div>
+                            {% endif %}
+
+                            <!-- National ID first page -->
+                            <label class="block text-gray-700 font-medium mb-1">national ID first page</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition mb-4 cursor-pointer"
+                                 onclick="document.getElementById('national_id_front').click()">
+                                <div id="national_id_front_preview" class="preview-area">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">Click to upload images or drag and drop here</p>
+                                    <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                                </div>
+                                <input type="file" name="national_id_front" accept="image/*" class="hidden" id="national_id_front"
+                                       onchange="previewImage(this, 'national_id_front_preview')">
+                                <button type="button"
+                                        onclick="event.stopPropagation(); document.getElementById('national_id_front').click()"
+                                        class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                            </div>
+
+                            <!-- National ID second page -->
+                            <label class="block text-gray-700 font-medium mb-1">national ID second page</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition mb-4 cursor-pointer"
+                                 onclick="document.getElementById('national_id_back').click()">
+                                <div id="national_id_back_preview" class="preview-area">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">Click to upload images or drag and drop here</p>
+                                    <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                                </div>
+                                <input type="file" name="national_id_back" accept="image/*" class="hidden" id="national_id_back"
+                                       onchange="previewImage(this, 'national_id_back_preview')">
+                                <button type="button"
+                                        onclick="event.stopPropagation(); document.getElementById('national_id_back').click()"
+                                        class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                            </div>
+
+                            <!-- License first page -->
+                            <label class="block text-gray-700 font-medium mb-1">license first page</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition mb-4 cursor-pointer"
+                                 onclick="document.getElementById('license_front').click()">
+                                <div id="license_front_preview" class="preview-area">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">Click to upload images or drag and drop here</p>
+                                    <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                                </div>
+                                <input type="file" name="license_front" accept="image/*" class="hidden" id="license_front"
+                                       onchange="previewImage(this, 'license_front_preview')">
+                                <button type="button"
+                                        onclick="event.stopPropagation(); document.getElementById('license_front').click()"
+                                        class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                            </div>
+
+                            <!-- License second page -->
+                            <label class="block text-gray-700 font-medium mb-1">license second page</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-500 transition mb-4 cursor-pointer"
+                                 onclick="document.getElementById('license_back').click()">
+                                <div id="license_back_preview" class="preview-area">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600">Click to upload images or drag and drop here</p>
+                                    <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                                </div>
+                                <input type="file" name="license_back" accept="image/*" class="hidden" id="license_back"
+                                       onchange="previewImage(this, 'license_back_preview')">
+                                <button type="button"
+                                        onclick="event.stopPropagation(); document.getElementById('license_back').click()"
+                                        class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-8 rounded-lg transition">
+                            {% if agent %}Update Account{% else %}Create Accounts{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewImage(input, previewId) {
+    const previewDiv = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewDiv.innerHTML = `<img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">`;
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        previewDiv.innerHTML = `<i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-600">Click to upload images or drag and drop here</p>
+                                <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>`;
+    }
+}
+</script>
+{% endblock %}

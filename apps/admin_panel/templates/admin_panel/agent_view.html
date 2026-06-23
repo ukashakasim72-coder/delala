@@ -1,0 +1,208 @@
+{% extends 'adminbase.html' %}
+
+{% block title %}Agent Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+    <div class="flex justify-between items-center mb-2">
+        <h1 class="text-2xl font-bold text-gray-800">Agent View Detail</h1>
+        <a href="{% url 'admin_panel:agent_list' %}" class="text-green-600 hover:underline">← Back to Agents</a>
+    </div>
+    <div class="flex justify-end mb-6">
+        <div class="text-right">
+            <label class="block text-sm font-medium text-gray-500">Profile picture</label>
+            {% if avatar_url %}
+                <img src="{{ avatar_url }}" alt="Avatar" class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 mt-1">
+            {% else %}
+                <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 mt-1">
+                    <i class="fas fa-user text-3xl"></i>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Left column: Personal info -->
+        <div class="space-y-8">
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Full name</label>
+                <p class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-200 focus:border-green-200">{{ full_name|default:"—" }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Email</label>
+                <p class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">{{ email }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Phone</label>
+                <p class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">{{ phone|default:"—" }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">WhatsApp</label>
+                <p class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">{{ whatsapp|default:"—" }}</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">Location</label>
+                <p class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">{{ location|default:"—" }}</p>
+            </div>
+        </div>
+
+        <!-- Right column: Document images -->
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-500">National ID first page</label>
+                {% if profile and profile.national_id_front %}
+                    <img src="{{ profile.national_id_front.url }}" alt="National ID Front" class="w-80 h-30 object-cover rounded-lg border border-gray-200 mt-1">
+                {% else %}
+                    <div class="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300 mt-1">
+                        <i class="fas fa-image text-3xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">National ID second page</label>
+                {% if profile and profile.national_id_back %}
+                    <img src="{{ profile.national_id_back.url }}" alt="National ID Back" class="w-80 h-30 object-cover rounded-lg border border-gray-200 mt-1">
+                {% else %}
+                    <div class="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300 mt-1">
+                        <i class="fas fa-image text-3xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">License first page</label>
+                {% if profile and profile.license_front %}
+                    <img src="{{ profile.license_front.url }}" alt="License Front" class="w-80 h-30 object-cover rounded-lg border border-gray-200 mt-1">
+                {% else %}
+                    <div class="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300 mt-1">
+                        <i class="fas fa-image text-3xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-500">License second page</label>
+                {% if profile and profile.license_back %}
+                    <img src="{{ profile.license_back.url }}" alt="License Back" class="w-80 h-30 object-cover rounded-lg border border-gray-200 mt-1">
+                {% else %}
+                    <div class="w-24 h-24 bg-gray-100 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300 mt-1">
+                        <i class="fas fa-image text-3xl"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">{% if agent %}{% else %}Create account{% endif %}</h1>
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="flex-1">
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-1">{% if agent %}Agent Account{% else %}Create agent account{% endif %}</h2>
+                <p class="text-gray-500 text-sm mb-6">
+                    {% if agent %}Update the details below{% else %}Fill in the details below to create a new agent account{% endif %}
+                </p>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left column -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Full name</label>
+                            <input type="text" name="full_name" value="{{ full_name|default:'' }}" placeholder="Enter full name"
+                                   class="w-full border rounded-lg px-3 py-3 mb-4 focus:ring-green-500 focus:border-green-500">
+
+                            <label class="block text-gray-700 font-medium mb-1">Phone</label>
+                            <input type="tel" name="phone" value="{{ phone|default:'' }}" placeholder="Enter phone number"
+                                   class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">
+
+                            <label class="block text-gray-700 font-medium mb-1">Location</label>
+                            <input type="text" name="location" value="{{ location|default:'' }}" placeholder="Enter location"
+                                   class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">
+
+                            <label class="block text-gray-700 font-medium mb-1">Password</label>
+                            <input type="password" name="password" placeholder="Enter Password"
+                                   class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">
+                            <label class="block text-gray-700 font-medium mb-1">Confirm password</label>
+                            <input type="password" name="confirm_password" placeholder="Confirm password"
+                                   class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <!-- Right column -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-1">Email</label>
+                            <input type="email" name="email" value="{{ email|default:'' }}" placeholder="Enter email address"
+                                   class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">
+
+                            <label class="block text-gray-700 font-medium mb-1">WhatsApp number</label>
+                            <input type="text" name="whatsapp" value="{{ whatsapp|default:'' }}" placeholder="Enter WhatsApp number"
+                                   class="w-full border rounded-lg px-4 py-2 mb-4 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-8 rounded-lg transition">
+                            {% if agent %}Update Account{% else %}Create Accounts{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<style>
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+        pointer-events: none;
+        background-color: #f9fafb;
+        color: #6b7280;
+        cursor: default;
+    }
+    .upload-area {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    button[type="submit"] {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .choose-btn {
+        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+(function() {
+    const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="password"]');
+    textInputs.forEach(input => input.setAttribute('readonly', true));
+
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => input.setAttribute('disabled', true));
+
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.setAttribute('disabled', true);
+
+    const uploadDivs = document.querySelectorAll('[onclick*="document.getElementById"]');
+    uploadDivs.forEach(div => div.removeAttribute('onclick'));
+
+    const chooseButtons = document.querySelectorAll('button[onclick*="event.stopPropagation()"]');
+    chooseButtons.forEach(btn => {
+        btn.removeAttribute('onclick');
+        btn.style.cursor = 'not-allowed';
+        btn.disabled = true;
+    });
+
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+    }
+
+    console.log('Form set to read-only mode – no edits or uploads allowed.');
+})();
+</script>
+</div>
+{% endblock %}

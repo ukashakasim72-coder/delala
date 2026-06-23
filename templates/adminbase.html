@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Digital Delala - Admin{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .text-green-main { color: #1DBF73; }
+        .bg-green-main { background-color: #1DBF73; }
+        .sidebar-link.active {
+            background-color: #1DBF73;
+            color: white !important;
+        }
+        #mobileSidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+        #mobileSidebar.show {
+            transform: translateX(0);
+        }
+        @media (min-width: 768px) {
+            #mobileSidebar {
+                transform: none !important;
+                position: relative;
+                display: block !important;
+                width: 16rem;
+            }
+            .mobile-menu-backdrop {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col md:flex-row h-screen overflow-hidden">
+
+    <!-- Mobile Header (visible only on small screens) -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm">
+        <img src="{% static 'images/delala_link_logo.png' %}" alt="Digital Delala" class="h-10 w-auto">
+        <button id="mobileMenuBtn" class="text-gray-600 focus:outline-none">
+            <i class="fas fa-ellipsis-v text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar for Desktop + Mobile Overlay -->
+    <div id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r flex flex-col shadow-lg md:relative md:shadow-none md:translate-x-0">
+        <!-- Close button inside mobile menu (only visible on mobile) -->
+        <div class="flex justify-between items-center p-4 border-b md:hidden">
+            <img src="{% static 'images/delala_link_logo.png' %}" alt="Digital Delala" class="h-10 w-auto">
+            <button id="closeMenuBtn" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-1 py-4 overflow-y-auto">
+            <a href="{% url 'admin_panel:dashboard' %}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition {% if request.resolver_match.url_name == 'dashboard' %}active{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-home w-5"></i> <span class="font-medium">Home</span>
+            </a>
+            <a href="{% url 'admin_panel:agent_list' %}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition {% if request.resolver_match.url_name == 'agent_list' %}active{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-users w-5"></i> <span class="font-medium">Agents lists</span>
+            </a>
+            <a href="{% url 'admin_panel:customer_list' %}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition {% if request.resolver_match.url_name == 'customer_list' %}active{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-user-friends w-5"></i> <span class="font-medium">Customer lists</span>
+            </a>
+            <a href="{% url 'admin_panel:agent_create' %}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition {% if request.resolver_match.url_name == 'agent_create' %}active{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-user-plus w-5"></i> <span class="font-medium">Create Agent Account</span>
+            </a>
+            <a href="{% url 'admin_panel:manage_listings' %}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition {% if request.resolver_match.url_name == 'manage_listings' %}active{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-list w-5"></i> <span class="font-medium">Approved Lists</span>
+            </a>
+            <a href="{% url 'admin_panel:approve_listings' %}" class="sidebar-link flex items-center gap-3 p-3 rounded-xl transition {% if request.resolver_match.url_name == 'approve_listings' %}active{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-check-circle w-5"></i> <span class="font-medium">pending Lists</span>
+            </a>
+            <a href="{% url 'admin_panel:monthly_reports' %}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition
+               {% if request.resolver_match.url_name == 'monthly_reports' %}bg-green-500 text-white{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-chart-bar w-4"></i> Monthly reports
+            </a>
+            <a href="{% url 'admin_panel:add_promotion' %}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition
+               {% if request.resolver_match.url_name == 'add_promotion' %}bg-green-500 text-white{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-plus-circle w-4"></i> Add Promotion
+            </a>
+            <a href="{% url 'admin_panel:promotion_list' %}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition
+               {% if request.resolver_match.url_name == 'promotion_list' %}bg-green-500 text-white{% else %}text-gray-600 hover:bg-gray-100{% endif %}">
+                <i class="fas fa-bullhorn w-4"></i> Promotion List
+            </a>
+
+            <!-- Sign Out -->
+            <div class="pt-10">
+                <form action="{% url 'admin_panel:delala_link_logo' %}" method="POST">
+                    {% csrf_token %}
+                         <i class="fas fa-sign-out-alt w-5"></i> <span class="font-medium">Sign out</span>
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Backdrop overlay -->
+    <div id="mobileMenuBackdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-transparent h-20 flex justify-end items-center px-4 md:px-10">
+            <div class="text-right">
+                <p class="font-bold text-gray-800 text-lg">{{ user.get_full_name|default:"Ukasha Kasim" }}</p>
+                <p class="text-green-main font-medium -mt-1">Administrator</p>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto px-4 md:px-10 pb-10">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        (function() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const backdrop = document.getElementById('mobileMenuBackdrop');
+            const openBtn = document.getElementById('mobileMenuBtn');
+            const closeBtn = document.getElementById('closeMenuBtn');
+
+            function openMenu() {
+                sidebar.classList.add('show');
+                backdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMenu() {
+                sidebar.classList.remove('show');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            if (openBtn) openBtn.addEventListener('click', openMenu);
+            if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+            if (backdrop) backdrop.addEventListener('click', closeMenu);
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    if (sidebar && sidebar.classList.contains('show')) {
+                        closeMenu();
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
+

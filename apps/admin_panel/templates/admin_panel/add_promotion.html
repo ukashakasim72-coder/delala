@@ -1,0 +1,404 @@
+{% extends 'adminbase.html' %}
+{% block title %}Add Promotion{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-[2rem] p-6 md:p-10 shadow-sm border border-gray-50">
+
+    <div class="mb-8 text-center md:text-left">
+        <div class="flex items-center gap-3 mb-2 justify-center md:justify-start">
+            <div class="text-[#1DBF73] text-3xl"><i class="fas fa-bullhorn"></i></div>
+            <h2 class="text-3xl font-black text-[#0B1C3F] tracking-tight">Add Promotion</h2>
+        </div>
+        <div class="h-1.5 w-20 bg-[#1DBF73] rounded-full mx-auto md:mx-0 mb-4"></div>
+        <p class="text-gray-500 font-medium">All details saved to database with unique ID — displayed as Premium Properties.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm
+            {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="promotionForm">
+        {% csrf_token %}
+
+        <!-- ===== PROMOTION SETTINGS ===== -->
+        <div class="bg-green-50 rounded-2xl p-5 border border-green-100 mb-6">
+            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-tag text-green-500"></i> Promotion Settings
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div class="md:col-span-2">
+                    <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">
+                        Promotion Title * <span class="text-gray-400 text-xs font-normal">(e.g. Premium Properties)</span>
+                    </label>
+                    <input type="text" name="title" id="promoTitle" required
+                           placeholder="e.g. Premium Properties"
+                           oninput="document.getElementById('prevTitle').textContent=this.value||'Premium Properties'"
+                           class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">
+                        Discount Badge <span class="text-gray-400 text-xs font-normal">(red top-right)</span>
+                    </label>
+                    <input type="text" name="discount_text" id="promoDiscount"
+                           placeholder="e.g. Save Up To 15%"
+                           maxlength="30" oninput="updateDiscount()"
+                           class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Promotion Type</label>
+                    <select name="promotion_type"
+                            class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all appearance-none">
+                        <option value="featured">Featured Listing</option>
+                        <option value="banner">Banner</option>
+                        <option value="discount">Discount</option>
+                        <option value="announcement">Announcement</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" name="is_active" id="is_active" checked
+                           class="w-5 h-5 rounded border-gray-300 text-green-500 focus:ring-green-400">
+                    <label for="is_active" class="text-gray-700 font-semibold text-sm">
+                        Active — show to customers immediately
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== AUTO-FILL FROM PROPERTY ===== -->
+        <div class="mb-6">
+            <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">
+                Auto-fill from Published Property
+                <span class="text-gray-400 text-xs font-normal">(optional)</span>
+            </label>
+            <select name="property_id" id="propertySelect" onchange="fillFromProperty(this)"
+                    class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all appearance-none">
+                <option value="">— Select to auto-fill fields below —</option>
+                {% for prop in properties %}
+                <option value="{{ prop.id }}"
+                        data-name="{{ prop.property_name }}"
+                        data-price="{{ prop.price }}"
+                        data-location="{{ prop.location }}"
+                        data-type="{{ prop.property_type }}"
+                        data-type-display="{{ prop.get_property_type_display }}"
+                        data-bedrooms="{{ prop.bedrooms }}"
+                        data-bathrooms="{{ prop.bathrooms }}"
+                        data-sqm="{{ prop.square_meters }}"
+                        data-description="{{ prop.description|escapejs }}"
+                        data-phone="{{ prop.user.phone_number|default:'' }}"
+                        data-image="{% if prop.additional_images.first %}{{ prop.additional_images.first.image.url }}{% elif prop.image %}{{ prop.image.url }}{% endif %}">
+                    #{{ prop.id }} — {{ prop.property_name }} ({{ prop.get_property_type_display }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- ===== PROPERTY FIELDS (same as add_property.html) ===== -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Property Name *</label>
+                <input type="text" name="property_name" id="f_name" required
+                       placeholder="e.g. Modern Apartment — CMC"
+                       oninput="document.getElementById('prevName').textContent=this.value||'Property Name'"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Price *</label>
+                <input type="text" name="price" id="f_price" required
+                       placeholder="e.g. 45,000"
+                       oninput="document.getElementById('prevPrice').textContent=(this.value||'0')+' Birr'"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Type *</label>
+                <select name="type" id="f_type" required
+                        onchange="updateType(this)"
+                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all appearance-none">
+                    <option value="" disabled selected>Select type</option>
+                    <option value="rent">For rent</option>
+                    <option value="sale">For sale</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Location *</label>
+                <input type="text" name="location" id="f_location" required
+                       placeholder="e.g. Yeka, Addis Ababa"
+                       oninput="document.getElementById('prevLoc').innerHTML='<i class=\'fas fa-location-dot text-green-400\'></i> '+this.value"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Agent Phone</label>
+                <input type="text" name="agent_phone" id="f_phone"
+                       placeholder="e.g. 0946464070"
+                       oninput="updatePhone()"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div></div>
+
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bedrooms *</label>
+                <input type="text" name="bedrooms" id="f_bedrooms" required
+                       placeholder="e.g. 3"
+                       oninput="document.getElementById('prevBed').textContent=this.value+' bed'"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bathrooms *</label>
+                <input type="text" name="bathrooms" id="f_bathrooms" required
+                       placeholder="e.g. 2"
+                       oninput="document.getElementById('prevRoom').textContent=this.value+' Room'"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Square Meters *</label>
+                <input type="text" name="square_meters" id="f_sqm" required
+                       placeholder="e.g. 180"
+                       oninput="document.getElementById('prevSqm').textContent=this.value+' Kare'"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Description</label>
+                <textarea name="description" id="f_description" rows="4"
+                          placeholder="Describe the property..."
+                          class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"></textarea>
+            </div>
+
+        </div>
+
+        <!-- ===== 4 IMAGES WITH CAPTIONS ===== -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+            {% for label, img_id, name_key, preview_id in img_fields %}
+            <!-- front image -->
+            {% endfor %}
+
+            <!-- front image -->
+            <div class="bg-gray-50 p-3 rounded-2xl">
+                <label class="block font-bold text-[#0B1C3F] mb-2">Front image</label>
+                <input type="text" name="front_image_name" placeholder="Image name (e.g., Front view)" maxlength="15"
+                       class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                     onclick="document.getElementById('add_img_1').click()">
+                    <div id="prev1" class="w-full h-44 flex flex-col items-center justify-center overflow-hidden gap-1">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                        <p class="text-xs text-gray-500">Click to upload</p>
+                        <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <input type="file" name="add_img_1" id="add_img_1" accept="image/*" class="hidden"
+                           onchange="previewImg(this,'prev1',true)">
+                    <button type="button" onclick="event.stopPropagation();document.getElementById('add_img_1').click()"
+                            class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                </div>
+            </div>
+
+            <!-- back image -->
+            <div class="bg-gray-50 p-3 rounded-2xl">
+                <label class="block font-bold text-[#0B1C3F] mb-2">Back image</label>
+                <input type="text" name="back_image_name" placeholder="Image name (e.g., Back view)" maxlength="15"
+                       class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                     onclick="document.getElementById('add_img_2').click()">
+                    <div id="prev2" class="w-full h-44 flex flex-col items-center justify-center overflow-hidden gap-1">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                        <p class="text-xs text-gray-500">Click to upload</p>
+                        <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <input type="file" name="add_img_2" id="add_img_2" accept="image/*" class="hidden"
+                           onchange="previewImg(this,'prev2',false)">
+                    <button type="button" onclick="event.stopPropagation();document.getElementById('add_img_2').click()"
+                            class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                </div>
+            </div>
+
+            <!-- right side image -->
+            <div class="bg-gray-50 p-3 rounded-2xl">
+                <label class="block font-bold text-[#0B1C3F] mb-2">Right side image</label>
+                <input type="text" name="right_image_name" placeholder="Image name (e.g., Right side)" maxlength="15"
+                       class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                     onclick="document.getElementById('add_img_3').click()">
+                    <div id="prev3" class="w-full h-44 flex flex-col items-center justify-center overflow-hidden gap-1">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                        <p class="text-xs text-gray-500">Click to upload</p>
+                        <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <input type="file" name="add_img_3" id="add_img_3" accept="image/*" class="hidden"
+                           onchange="previewImg(this,'prev3',false)">
+                    <button type="button" onclick="event.stopPropagation();document.getElementById('add_img_3').click()"
+                            class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                </div>
+            </div>
+
+            <!-- left side image -->
+            <div class="bg-gray-50 p-3 rounded-2xl">
+                <label class="block font-bold text-[#0B1C3F] mb-2">Left side image</label>
+                <input type="text" name="left_image_name" placeholder="Image name (e.g., Left side)" maxlength="15"
+                       class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                     onclick="document.getElementById('add_img_4').click()">
+                    <div id="prev4" class="w-full h-44 flex flex-col items-center justify-center overflow-hidden gap-1">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                        <p class="text-xs text-gray-500">Click to upload</p>
+                        <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                    </div>
+                    <input type="file" name="add_img_4" id="add_img_4" accept="image/*" class="hidden"
+                           onchange="previewImg(this,'prev4',false)">
+                    <button type="button" onclick="event.stopPropagation();document.getElementById('add_img_4').click()"
+                            class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== LIVE PREVIEW ===== -->
+        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 mb-6">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Live Preview</p>
+            <p id="prevTitle" class="text-lg font-bold text-gray-800 mb-3">Premium Properties</p>
+
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden max-w-xs border border-gray-100">
+                <div class="relative">
+                    <img id="prevMainImg" src="" class="w-full h-44 object-cover" style="display:none;">
+                    <div id="prevMainPlaceholder" class="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-300">
+                        <i class="fas fa-image text-5xl"></i>
+                    </div>
+                    <!-- Green phone pill -->
+                    <span id="prevPhoneBadge" class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white hidden"></span>
+                    <!-- Red discount badge -->
+                    <span id="prevDiscountBadge" class="absolute top-3 right-10 px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white hidden"></span>
+                    <!-- Bookmark -->
+                    <div class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-400">
+                        <i class="fas fa-bookmark text-sm"></i>
+                    </div>
+                    <!-- Type badge bottom-left -->
+                    <span id="prevTypeBadge" class="absolute bottom-8 left-3 px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white hidden"></span>
+                    <!-- Dot -->
+                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        <span class="w-5 h-1.5 rounded-full bg-green-500"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-white bg-opacity-70"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-white bg-opacity-70"></span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 id="prevName" class="font-bold text-gray-800 text-base">Property Name</h3>
+                    <p id="prevLoc" class="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                        <i class="fas fa-location-dot text-green-400"></i> Location
+                    </p>
+                    <div class="flex items-center justify-between mt-3">
+                        <p id="prevPrice" class="text-green-600 font-extrabold text-base">0 Birr</p>
+                        <div class="flex gap-3 text-xs text-gray-600">
+                            <span id="prevBed">3 bed</span>
+                            <span id="prevRoom">2 Room</span>
+                            <span id="prevSqm">180 Kare</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BUTTONS ===== -->
+        <div class="flex flex-row gap-4">
+            <button type="submit"
+                    class="w-full bg-[#1DBF73] hover:bg-[#16a363] text-white font-semibold py-3 px-12 rounded-xl shadow-md transition-all text-lg active:scale-[0.98]">
+                Save Promotion
+            </button>
+            <a href="{% url 'admin_panel:promotion_list' %}"
+               class="w-full bg-white border-2 border-gray-200 text-gray-700 font-semibold py-3 px-12 rounded-xl text-center transition-all text-lg">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+function previewImg(input, previewId, isMain) {
+    const div = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-lg">`;
+            if (isMain) {
+                document.getElementById('prevMainImg').src = e.target.result;
+                document.getElementById('prevMainImg').style.display = 'block';
+                document.getElementById('prevMainPlaceholder').style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function fillFromProperty(select) {
+    const opt = select.options[select.selectedIndex];
+    if (!opt || !opt.value) return;
+    document.getElementById('f_name').value = opt.dataset.name || '';
+    document.getElementById('f_price').value = opt.dataset.price || '';
+    document.getElementById('f_location').value = opt.dataset.location || '';
+    document.getElementById('f_bedrooms').value = opt.dataset.bedrooms || '';
+    document.getElementById('f_bathrooms').value = opt.dataset.bathrooms || '';
+    document.getElementById('f_sqm').value = opt.dataset.sqm || '';
+    document.getElementById('f_description').value = opt.dataset.description || '';
+    document.getElementById('f_phone').value = opt.dataset.phone || '';
+    const ts = document.getElementById('f_type');
+    for (let i=0; i<ts.options.length; i++) {
+        if (ts.options[i].value === opt.dataset.type) { ts.selectedIndex = i; break; }
+    }
+    // Preview
+    document.getElementById('prevName').textContent = opt.dataset.name || 'Property Name';
+    document.getElementById('prevPrice').textContent = (opt.dataset.price||'0') + ' Birr';
+    document.getElementById('prevLoc').innerHTML = `<i class="fas fa-location-dot text-green-400"></i> ${opt.dataset.location||'Location'}`;
+    document.getElementById('prevBed').textContent = (opt.dataset.bedrooms||'—') + ' bed';
+    document.getElementById('prevRoom').textContent = (opt.dataset.bathrooms||'—') + ' Room';
+    document.getElementById('prevSqm').textContent = (opt.dataset.sqm||'—') + ' Kare';
+    updatePhone();
+    const tb = document.getElementById('prevTypeBadge');
+    if (opt.dataset.typeDisplay) { tb.textContent = opt.dataset.typeDisplay; tb.classList.remove('hidden'); }
+    if (opt.dataset.image) {
+        document.getElementById('prevMainImg').src = opt.dataset.image;
+        document.getElementById('prevMainImg').style.display = 'block';
+        document.getElementById('prevMainPlaceholder').style.display = 'none';
+    }
+}
+
+function updateDiscount() {
+    const val = document.getElementById('promoDiscount').value;
+    const el = document.getElementById('prevDiscountBadge');
+    if (val) { el.textContent = val; el.classList.remove('hidden'); }
+    else el.classList.add('hidden');
+}
+
+function updatePhone() {
+    const val = document.getElementById('f_phone').value;
+    const el = document.getElementById('prevPhoneBadge');
+    if (val) { el.textContent = val; el.classList.remove('hidden'); }
+    else el.classList.add('hidden');
+}
+
+function updateType(sel) {
+    const tb = document.getElementById('prevTypeBadge');
+    const map = {'rent':'For Rent','sale':'For Sale'};
+    if (sel.value) { tb.textContent = map[sel.value]||sel.value; tb.classList.remove('hidden'); }
+    else tb.classList.add('hidden');
+}
+</script>
+{% endblock %}
+
+

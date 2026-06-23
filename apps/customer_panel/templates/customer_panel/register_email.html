@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register by Email - Digital Delala</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        input:focus { outline: none; }
+    </style>
+</head>
+<body class="min-h-screen bg-white">
+
+<div class="max-w-md mx-auto px-6 pt-10 pb-16">
+
+    <!-- Back arrow -->
+    <a href="{% url 'customer_panel:register' %}" class="inline-flex items-center text-gray-800 mb-8">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+    </a>
+
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Register by Email</h1>
+    <p class="text-gray-400 text-sm mb-8">Instant access — no approval needed.</p>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm
+            {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Full name -->
+        <div>
+            <label class="block text-gray-900 font-semibold text-base mb-3">Full name</label>
+            <input type="text"
+                   name="full_name"
+                   placeholder="Enter your full name"
+                   required
+                   class="w-full border border-gray-200 rounded-2xl px-5 py-4 text-base text-gray-700 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+        </div>
+
+        <!-- Email -->
+        <div>
+            <label class="block text-gray-900 font-semibold text-base mb-3">Email address</label>
+            <input type="email"
+                   name="email"
+                   placeholder="example@gmail.com"
+                   required
+                   class="w-full border border-gray-200 rounded-2xl px-5 py-4 text-base text-gray-700 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label class="block text-gray-900 font-semibold text-base mb-3">Password</label>
+            <div class="relative">
+                <input type="password"
+                       name="password"
+                       id="password"
+                       required
+                       class="w-full border border-gray-200 rounded-2xl px-5 py-4 text-base text-gray-700 pr-14 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+                <button type="button"
+                        onclick="togglePwd('password', 'eye1')"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i id="eye1" class="far fa-eye text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Confirm password -->
+        <div>
+            <label class="block text-gray-900 font-semibold text-base mb-3">Confirm password</label>
+            <div class="relative">
+                <input type="password"
+                       name="confirm_password"
+                       id="confirm_password"
+                       required
+                       class="w-full border border-gray-200 rounded-2xl px-5 py-4 text-base text-gray-700 pr-14 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+                <button type="button"
+                        onclick="togglePwd('confirm_password', 'eye2')"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i id="eye2" class="far fa-eye text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sign up button -->
+        <div class="pt-2">
+            <button type="submit"
+                    class="w-full bg-[#1DBF73] hover:bg-[#19a362] active:bg-[#158f56] text-white font-semibold text-lg py-4 rounded-full transition-all duration-200 active:scale-95 shadow-sm">
+                Sign up
+            </button>
+        </div>
+
+        <!-- Links -->
+        <div class="text-center space-y-2">
+            <p class="text-sm text-gray-400">
+                Register with phone instead?
+                <a href="{% url 'customer_panel:register' %}" class="text-[#1DBF73] font-semibold hover:underline">Use phone</a>
+            </p>
+            <p class="text-sm text-gray-400">
+                Already have an account?
+                <a href="{% url 'customer_panel:login' %}" class="text-[#1DBF73] font-semibold hover:underline">Sign in</a>
+            </p>
+        </div>
+
+    </form>
+</div>
+
+<script>
+function togglePwd(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
+
+</body>
+</html>
+
+

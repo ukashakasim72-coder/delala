@@ -1,0 +1,176 @@
+{% extends 'customer_panel/base.html' %}
+{% block title %}{{ property.property_name }} - Digital Delala{% endblock %}
+
+{% block content %}
+
+<!-- Back + Actions -->
+<div class="flex justify-between items-center mb-5">
+    <a href="{% url 'customer_panel:home' %}"
+       class="text-lg text-green-400 hover:text-green-500 flex items-center gap-1">
+        <i class="fas fa-arrow-left text-xs"></i> Back to listings
+    </a>
+    <div class="flex items-center gap-4 text-sm text-green-400">
+        <button onclick="shareProperty()" class="hover:text-green-500 flex items-center gap-1">
+            <i class="fas fa-share-nodes text-xs"></i> Share property
+        </button>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+    <!-- LEFT: Images + Details -->
+    <div class="lg:col-span-2 space-y-4">
+
+        <!-- Main Image -->
+        <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+            {% if property.image %}
+                <img id="mainImg" src="{{ property.image.url }}" alt="{{ property.property_name }}"
+                     class="w-full h-100 object-cover" style="transition: opacity 0.2s;">
+            {% else %}
+                <div class="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-200">
+                    <i class="fas fa-image text-6xl"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Thumbnails -->
+        {% if additional_images or property.image %}
+        <div class="flex gap-3 overflow-x-auto pb-1">
+            {% if property.image %}
+            <img src="{{ property.image.url }}" onclick="switchImg(this)"
+                 class="thumb w-20 h-20 object-cover rounded-xl cursor-pointer border-2 border-green-400 flex-shrink-0">
+            {% endif %}
+            {% for img in additional_images %}
+            <img src="{{ img.image.url }}" onclick="switchImg(this)"
+                 class="thumb w-20 h-20 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-green-300 flex-shrink-0 transition">
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Property Details Card -->
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">{{ property.property_name }}</h1>
+                    <p class="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                        <i class="fas fa-location-dot text-green-400"></i> {{ property.location }}
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class=" text-lg text-green-500 font-bold text-base">{{ property.price }} birr</p>
+                    <span class="text-sm px-2 py-0.5 rounded-full
+                        {% if property.property_type == 'rent' %}bg-orange-500 text-white {% else %}bg-lime-500 text-white{% endif %}">
+                        {{ property.get_property_type_display }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="flex gap-8 py-4 border-y border-gray-100">
+                <div class="flex flex-col items-center gap-1">
+                    <i class="fas fa-bed text-green-500 text-lg"></i>
+                    <span class="text-lg text-black-700">{{ property.bedrooms }} Bed</span>
+                </div>
+                <div class="flex flex-col items-center gap-1">
+                    <i class="fas fa-door-open  text-green-500 text-lg"></i>
+                    <span class="text-lg text-black-700">{{ property.bathrooms }} rooms</span>
+                </div>
+                <div class="flex flex-col items-center gap-1">
+                    <i class="fas fa-vector-square text-green-500 text-lg"></i>
+                    <span class="text-lg text-black-700">{{ property.square_meters }} kare</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="border-t pt-4">
+                <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                    <i class="fas fa-file-alt text-[#1DBF73]"></i> Description
+                </h3>
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-sm">
+                    <p class="text-gray-700 leading-relaxed break-words">
+                        {{ property.description|default:"No description provided." }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Agent + Save -->
+    <div class="space-y-4">
+
+        <!-- Save Button -->
+        <form method="post" action="{% url 'customer_panel:toggle_save' property.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit"
+                    class="w-full py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition
+                    {% if is_saved %}bg-green-500 text-white hover:bg-green-600{% else %}bg-white border-2 border-green-400 text-green-500 hover:bg-green-50{% endif %}">
+                <i class="fas fa-bookmark"></i>
+                {% if is_saved %}Saved{% else %}Save Property{% endif %}
+            </button>
+        </form>
+
+        <!-- Agent Card -->
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <h3 class="text-xs font-bold text-black-500 uppercase tracking-wider mb-4">Agent</h3>
+            <div class="flex items-center gap-3 mb-4">
+                {% if agent_avatar %}
+                    <img src="{{ agent_avatar }}" class="w-12 h-12 rounded-full object-cover border-2 border-green-300">
+                {% else %}
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-lg">
+                        {{ agent.email|first|upper }}
+                    </div>
+                {% endif %}
+                <div>
+                    <p class="font-semibold text-gray-800 text-sm">
+                        {{ agent.get_full_name|default:agent.email }}
+                    </p>
+                    <p class="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                        <i class="fas fa-location-dot text-green-600"></i>
+                        {{ agent_location }}
+                    </p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <a href="tel:{{ agent_phone }}"
+                   class="w-full flex items-center justify-center gap-2 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 transition">
+                    <i class="fas fa-phone text-xs"></i> {{ agent_phone }}
+                </a>
+                <a href="https://wa.me/{{ agent_phone }}" target="_blank"
+                   class="w-full flex items-center justify-center gap-2 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-semibold hover:bg-green-100 transition">
+                    <i class="fab fa-whatsapp"></i> Contact on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchImg(el) {
+    const main = document.getElementById('mainImg');
+    if (!main) return;
+    main.style.opacity = '0';
+    setTimeout(() => {
+        main.src = el.src;
+        main.style.opacity = '1';
+    }, 150);
+    document.querySelectorAll('.thumb').forEach(t => {
+        t.classList.remove('border-green-400');
+        t.classList.add('border-transparent');
+    });
+    el.classList.add('border-green-400');
+    el.classList.remove('border-transparent');
+}
+
+function shareProperty() {
+    if (navigator.share) {
+        navigator.share({ title: '{{ property.property_name }}', url: window.location.href });
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+    }
+}
+</script>
+
+
+{% endblock %}

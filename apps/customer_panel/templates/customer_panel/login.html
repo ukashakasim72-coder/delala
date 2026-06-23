@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Login - Digital Delala</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f4f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        input:focus { outline: none; }
+        .phone-input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+            background: white;
+        }
+        .phone-prefix {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 14px;
+            border-right: 1.5px solid #e5e7eb;
+            height: 56px;
+            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 500;
+            color: #374151;
+            background: white;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<div class="max-w-md mx-auto px-5 pt-14 pb-16">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
+        <p class="text-3xl font-light text-gray-800 mt-1">Sign in to continue</p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm
+            {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Phone / Email toggle -->
+    <div class="flex bg-white rounded-full p-1.5 mb-7 shadow-sm">
+        <button type="button" id="tabPhoneBtn" onclick="switchTab('phone')"
+                class="flex-1 py-3 rounded-full font-semibold text-sm transition bg-[#1DBF73] text-white">
+            Phone
+        </button>
+        <button type="button" id="tabEmailBtn" onclick="switchTab('email')"
+                class="flex-1 py-3 rounded-full font-semibold text-sm transition text-gray-700">
+            Email
+        </button>
+    </div>
+
+    <!-- ====== PHONE FORM ====== -->
+    <form id="phoneForm" method="post" action="{% url 'customer_panel:login' %}" class="space-y-5">
+        {% csrf_token %}
+        <input type="hidden" name="login_type" value="phone">
+
+        <!-- Phone Number -->
+        <div>
+            <label class="block text-gray-900 font-bold text-base mb-2">
+                Phone Number <span class="text-red-500">*</span>
+            </label>
+            <div class="phone-input-wrapper">
+                <div class="phone-prefix">
+                    <svg width="24" height="16" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="5.33" y="0" fill="#009A44"/>
+                        <rect width="24" height="5.33" y="5.33" fill="#FCDD09"/>
+                        <rect width="24" height="5.33" y="10.67" fill="#EF3340"/>
+                        <circle cx="12" cy="8" r="3.5" fill="#006FC0"/>
+                        <polygon points="12,5 12.8,7.4 15.3,7.4 13.3,9 14,11.5 12,10 10,11.5 10.7,9 8.7,7.4 11.2,7.4" fill="#FCDD09" transform="scale(0.55) translate(9.8, 5.8)"/>
+                    </svg>
+                    <span>+251</span>
+                </div>
+                <input type="tel"
+                       name="phone"
+                       placeholder="946440700"
+                       class="flex-1 px-4 py-4 text-base text-gray-700 placeholder-gray-400 bg-white focus:ring-0"
+                       style="border: none; outline: none;">
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label class="block text-gray-900 font-bold text-base mb-2">
+                Password <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+                <input type="password"
+                       name="password"
+                       id="phone_password"
+                       placeholder="••••••"
+                       class="w-full border border-gray-200 rounded-2xl px-5 py-4 text-base text-gray-700 placeholder-gray-400 bg-white pr-14 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+                <button type="button"
+                        onclick="togglePwd('phone_password', 'eye_phone')"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i id="eye_phone" class="fas fa-eye-slash text-xl"></i>
+                </button>
+            </div>
+            <!-- Forgot password -->
+            <div class="text-right mt-2">
+                <a href="#" class="text-sm text-[#1DBF73] font-semibold hover:underline">Forgot Password?</a>
+            </div>
+        </div>
+
+        <!-- Sign In button -->
+        <div class="pt-1">
+            <button type="submit"
+                    class="w-full bg-[#1DBF73] hover:bg-[#19a362] active:bg-[#158f56] text-white font-bold text-lg py-4 rounded-full transition-all duration-200 active:scale-95 shadow-sm">
+                Sign In
+            </button>
+        </div>
+    </form>
+
+    <!-- ====== EMAIL FORM ====== -->
+    <form id="emailForm" method="post" action="{% url 'customer_panel:login' %}" class="space-y-5 hidden">
+        {% csrf_token %}
+        <input type="hidden" name="login_type" value="email">
+
+        <!-- Email -->
+        <div>
+            <label class="block text-gray-900 font-bold text-base mb-2">
+                Email Address <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <i class="fas fa-envelope"></i>
+                </span>
+                <input type="email"
+                       name="email"
+                       placeholder="example@gmail.com"
+                       class="w-full border border-gray-200 rounded-2xl pl-11 pr-5 py-4 text-base text-gray-700 placeholder-gray-400 bg-white focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label class="block text-gray-900 font-bold text-base mb-2">
+                Password <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+                <input type="password"
+                       name="password"
+                       id="email_password"
+                       placeholder="••••••"
+                       class="w-full border border-gray-200 rounded-2xl px-5 py-4 text-base text-gray-700 placeholder-gray-400 bg-white pr-14 focus:border-green-400 focus:ring-2 focus:ring-green-100 transition">
+                <button type="button"
+                        onclick="togglePwd('email_password', 'eye_email')"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <i id="eye_email" class="fas fa-eye-slash text-xl"></i>
+                </button>
+            </div>
+            <!-- Forgot password -->
+            <div class="text-right mt-2">
+                <a href="{% url 'customer_panel:forgot_password' %}" class="text-sm text-[#1DBF73] font-semibold hover:underline">Forgot Password?</a>
+            </div>
+        </div>
+
+        <!-- Sign In button -->
+        <div class="pt-1">
+            <button type="submit"
+                    class="w-full bg-[#1DBF73] hover:bg-[#19a362] active:bg-[#158f56] text-white font-bold text-lg py-4 rounded-full transition-all duration-200 active:scale-95 shadow-sm">
+                Sign In
+            </button>
+        </div>
+    </form>
+
+    <!-- Sign up link -->
+    <p class="text-center text-sm text-gray-500 mt-6">
+        Don't have an account?
+        <a href="{% url 'customer_panel:register' %}" class="text-[#1DBF73] font-bold hover:underline">Sign Up</a>
+    </p>
+
+</div>
+
+<script>
+function togglePwd(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    }
+}
+
+function switchTab(tab) {
+    const phoneForm = document.getElementById('phoneForm');
+    const emailForm = document.getElementById('emailForm');
+    const phoneBtn = document.getElementById('tabPhoneBtn');
+    const emailBtn = document.getElementById('tabEmailBtn');
+
+    if (tab === 'phone') {
+        phoneForm.classList.remove('hidden');
+        emailForm.classList.add('hidden');
+        phoneBtn.classList.add('bg-[#1DBF73]', 'text-white');
+        phoneBtn.classList.remove('text-gray-700');
+        emailBtn.classList.remove('bg-[#1DBF73]', 'text-white');
+        emailBtn.classList.add('text-gray-700');
+    } else {
+        emailForm.classList.remove('hidden');
+        phoneForm.classList.add('hidden');
+        emailBtn.classList.add('bg-[#1DBF73]', 'text-white');
+        emailBtn.classList.remove('text-gray-700');
+        phoneBtn.classList.remove('bg-[#1DBF73]', 'text-white');
+        phoneBtn.classList.add('text-gray-700');
+    }
+}
+</script>
+
+</body>
+</html>
+

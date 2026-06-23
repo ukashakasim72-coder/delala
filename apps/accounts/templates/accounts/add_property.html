@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if property %}Edit{% else %}Add{% endif %} Property - Digital Delala{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-[2rem] p-6 md:p-10 shadow-sm border border-gray-50">
+
+    <!-- Brand Header Section -->
+    <div class="mb-10 text-center md:text-left">
+        <div class="flex items-center gap-3 mb-2 justify-center md:justify-start">
+            <div class="text-[#1DBF73] text-3xl"><i class="fa-solid fa-circle-nodes"></i></div>
+            <h2 class="text-3xl font-black text-[#0B1C3F] tracking-tight">
+                {% if property %}Edit Property{% else %}Add Property{% endif %}
+            </h2>
+        </div>
+        <div class="h-1.5 w-20 bg-[#1DBF73] rounded-full mx-auto md:mx-0 mb-4"></div>
+        <p class="text-gray-500 font-medium">
+            {% if property %}Update your listing information to keep it accurate.{% else %}Fill in the details below to list your property on the market.{% endif %}
+        </p>
+    </div>
+
+    <!-- Form Start -->
+    <form method="post" enctype="multipart/form-data" id="propertyForm" action="{% if property %}{% url 'edit_property' property.id %}{% else %}{% url 'add_property' %}{% endif %}" class="space-y-6">
+        {% csrf_token %}
+
+        {% if property %}
+            <input type="hidden" name="_method" value="PUT">
+        {% endif %}
+
+        <!-- Form Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            <!-- Property Name (Full Width) -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Property Name *</label>
+                <input type="text" name="property_name" id="property_name" required value="{{ property.property_name|default:'' }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. Modern Luxury Villa">
+                <p id="property_name_error" class="text-red-500 text-xs mt-1 hidden">First character must be a letter</p>
+            </div>
+
+            <!-- Price -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Price *</label>
+                <input type="text" name="price" id="price" required value="{{ property.price|default:'' }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. 18,000 birr">
+                <p id="price_error" class="text-red-500 text-xs mt-1 hidden">First character must be a number</p>
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Type *</label>
+                <select name="type" id="type_select" required
+                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all appearance-none">
+                    <option value="" disabled {% if not property or not property.property_type %}selected{% endif %}>Select type (for rent / for sale)</option>
+                    <option value="rent" {% if property and property.property_type == 'rent' %}selected{% endif %}>For rent</option>
+                    <option value="sale" {% if property and property.property_type == 'sale' %}selected{% endif %}>For sale</option>
+                </select>
+            </div>
+
+            <!-- Location (Full Width) -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Location *</label>
+                <input type="text" name="location" required value="{{ property.location|default:'' }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. Bole, Addis Ababa">
+            </div>
+
+            <!-- Bedrooms -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bedrooms *</label>
+                <input type="text" name="bedrooms" id="bedrooms" required value="{{ property.bedrooms|default:'' }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. 3">
+                <p id="bedrooms_error" class="text-red-500 text-xs mt-1 hidden">Only numbers allowed</p>
+            </div>
+
+            <!-- Bathrooms -->
+            <div>
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bathrooms *</label>
+                <input type="text" name="bathrooms" id="bathrooms" required value="{{ property.bathrooms|default:'' }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. 2">
+                <p id="bathrooms_error" class="text-red-500 text-xs mt-1 hidden">Only numbers allowed</p>
+            </div>
+
+            <!-- Square Meters -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Square Meters *</label>
+                <input type="text" name="square_meters" id="square_meters" required value="{{ property.square_meters|default:'' }}"
+                       class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
+                       placeholder="e.g. 250">
+                <p id="square_meters_error" class="text-red-500 text-xs mt-1 hidden">Only numbers allowed</p>
+            </div>
+
+            <!-- Description (Full Width) -->
+            <div class="md:col-span-2">
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Description</label>
+                <textarea name="description" rows="4"
+                          class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all">{{ property.description|default:'' }}</textarea>
+            </div>
+
+            <!-- ====== IMAGE UPLOAD SECTION (now with larger previews) ====== -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <!-- front image -->
+                <div class="bg-gray-50 p-3 rounded-2xl">
+                    <label class="block font-bold text-[#0B1C3F] mb-2">front image</label>
+                    <input type="text" name="front_image_name" placeholder="Image name(e.g., Front view)" maxlength="15"
+                           class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                         onclick="document.getElementById('front_image').click()">
+                        <div id="front_image_preview" class="preview-area w-full h-56 flex items-center justify-center overflow-hidden">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                            <p class="text-sm text-gray-600">Click to upload or drag & drop</p>
+                            <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                        </div>
+                        <input type="file" name="add_img_1" accept="image/*" class="hidden" id="front_image"
+                               onchange="previewImage(this, 'front_image_preview')">
+                        <button type="button"
+                                onclick="event.stopPropagation(); document.getElementById('front_image').click()"
+                                class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                    </div>
+                </div>
+
+                <!-- back image -->
+                <div class="bg-gray-50 p-3 rounded-2xl">
+                    <label class="block font-bold text-[#0B1C3F] mb-2">back image</label>
+                    <input type="text" name="back_image_name" placeholder="Image name (e.g., Back view)" maxlength="15"
+                           class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                         onclick="document.getElementById('back_image').click()">
+                        <div id="back_image_preview" class="preview-area w-full h-56 flex items-center justify-center overflow-hidden">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                            <p class="text-sm text-gray-600">Click to upload or drag & drop</p>
+                            <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                        </div>
+                        <input type="file" name="add_img_2" accept="image/*" class="hidden" id="back_image"
+                               onchange="previewImage(this, 'back_image_preview')">
+                        <button type="button"
+                                onclick="event.stopPropagation(); document.getElementById('back_image').click()"
+                                class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                    </div>
+                </div>
+
+                <!-- right side image -->
+                <div class="bg-gray-50 p-3 rounded-2xl">
+                    <label class="block font-bold text-[#0B1C3F] mb-2">right side image</label>
+                    <input type="text" name="right_image_name" placeholder="Image name (e.g., Right side)" maxlength="15"
+                           class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                         onclick="document.getElementById('right_image').click()">
+                        <div id="right_image_preview" class="preview-area w-full h-56 flex items-center justify-center overflow-hidden">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                            <p class="text-sm text-gray-600">Click to upload or drag & drop</p>
+                            <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                        </div>
+                        <input type="file" name="add_img_3" accept="image/*" class="hidden" id="right_image"
+                               onchange="previewImage(this, 'right_image_preview')">
+                        <button type="button"
+                                onclick="event.stopPropagation(); document.getElementById('right_image').click()"
+                                class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                    </div>
+                </div>
+
+                <!-- left side image -->
+                <div class="bg-gray-50 p-3 rounded-2xl">
+                    <label class="block font-bold text-[#0B1C3F] mb-2">left side image</label>
+                    <input type="text" name="left_image_name" placeholder="Image name (e.g., Left side)" maxlength="15"
+                           class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 mb-2 focus:ring-2 focus:ring-[#1DBF73] outline-none">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-green-500 transition cursor-pointer"
+                         onclick="document.getElementById('left_image').click()">
+                        <div id="left_image_preview" class="preview-area w-full h-56 flex items-center justify-center overflow-hidden">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                            <p class="text-sm text-gray-600">Click to upload or drag & drop</p>
+                            <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>
+                        </div>
+                        <input type="file" name="add_img_4" accept="image/*" class="hidden" id="left_image"
+                               onchange="previewImage(this, 'left_image_preview')">
+                        <button type="button"
+                                onclick="event.stopPropagation(); document.getElementById('left_image').click()"
+                                class="mt-2 bg-gray-100 px-4 py-2 rounded-lg text-sm">Choose File</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview script (updated to fill the container) -->
+            <script>
+            function previewImage(input, previewId) {
+                const previewDiv = document.getElementById(previewId);
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewDiv.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-lg">`;
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    previewDiv.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                        <p class="text-sm text-gray-600">Click to upload or drag & drop</p>
+                        <p class="text-xs text-gray-400">JPG, PNG (Max 10MB)</p>`;
+                }
+            }
+            </script>
+        </div>
+
+        <!-- Buttons Section -->
+        <div class="flex flex-row sm:flex-row gap-4 mt-30">
+            <button type="submit"
+                    class="w-full sm:flex-7 bg-green-500 hover:bg-green-500 active:bg-green-500 text-white font-semibold py-2 px-12 rounded-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#1DBF73] focus:ring-offset-2 transition-all duration-200 text-lg sm:text-base disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]">
+                {% if property %}Update Property{% else %}Save{% endif %}
+            </button>
+
+            <a href="{% url 'dashboard' %}"
+               class="w-full sm:flex-1 bg-white border-2 border-gray-200 text-gray-700 hover:text-gray-900 hover:border-gray-300 font-semibold py-2 px-12 rounded-xl text-center transition-all duration-200 text-lg sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Validation Script (unchanged) -->
+<script>
+    // Helper: hide error message
+    function hideError(id) {
+        const err = document.getElementById(id);
+        if (err) err.classList.add('hidden');
+    }
+    function showError(id) {
+        const err = document.getElementById(id);
+        if (err) err.classList.remove('hidden');
+    }
+
+    // Validate property name: first char must be alphabet
+    function validatePropertyName() {
+        const nameInput = document.getElementById('property_name');
+        const val = nameInput.value.trim();
+        if (val.length === 0) return true; // required field, but empty will be caught by 'required'
+        const firstChar = val.charAt(0);
+        const isAlpha = /[A-Za-z]/.test(firstChar);
+        if (!isAlpha) {
+            showError('property_name_error');
+            return false;
+        } else {
+            hideError('property_name_error');
+            return true;
+        }
+    }
+
+    // Validate price: first character must be a number
+    function validatePrice() {
+        const priceInput = document.getElementById('price');
+        const val = priceInput.value.trim();
+        if (val.length === 0) return true;
+        const firstChar = val.charAt(0);
+        const isDigit = /[0-9]/.test(firstChar);
+        if (!isDigit) {
+            showError('price_error');
+            return false;
+        } else {
+            hideError('price_error');
+            return true;
+        }
+    }
+
+    // Validate numeric fields – show error if any non-digit
+    function validateNumeric(id, errorId) {
+        const input = document.getElementById(id);
+        const val = input.value.trim();
+        if (val === '') {
+            hideError(errorId);
+            return true; // required attribute will catch empty
+        }
+        if (!/^\d+$/.test(val)) {
+            showError(errorId);
+            return false;
+        } else {
+            hideError(errorId);
+            return true;
+        }
+    }
+
+    // Attach real-time validation
+    document.getElementById('property_name').addEventListener('input', validatePropertyName);
+    document.getElementById('price').addEventListener('input', validatePrice);
+    document.getElementById('bedrooms').addEventListener('input', function() { validateNumeric('bedrooms', 'bedrooms_error'); });
+    document.getElementById('bathrooms').addEventListener('input', function() { validateNumeric('bathrooms', 'bathrooms_error'); });
+    document.getElementById('square_meters').addEventListener('input', function() { validateNumeric('square_meters', 'square_meters_error'); });
+
+    // Form submit validation
+    const form = document.getElementById('propertyForm');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        if (!validatePropertyName()) isValid = false;
+        if (!validatePrice()) isValid = false;
+        if (!validateNumeric('bedrooms', 'bedrooms_error')) isValid = false;
+        if (!validateNumeric('bathrooms', 'bathrooms_error')) isValid = false;
+        if (!validateNumeric('square_meters', 'square_meters_error')) isValid = false;
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fix the errors in the form.');
+        }
+    });
+</script>
+{% endblock %}
+
+
+
