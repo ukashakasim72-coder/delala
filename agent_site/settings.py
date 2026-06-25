@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -83,6 +84,8 @@ DATABASES = {
         'PORT': config('DB_PORT', default=5432, cast=int),
     }
 }
+
+DATABASES["default"] = dj_database_url.parse("postgresql://delala_gutg_user:v6IZBxnJpYX0fxhwsNGabN8gIBp0AVVf@dpg-d8t7dcurnols73a8u7r0-a.oregon-postgres.render.com/delala_gutg")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
