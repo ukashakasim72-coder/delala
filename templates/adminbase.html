@@ -91,9 +91,10 @@
 
             <!-- Sign Out -->
             <div class="pt-10">
-                <form action="{% url 'admin_panel:delala_link_logo' %}" method="POST">
+                <form action="{% url 'admin_panel:logout' %}" method="POST">
                     {% csrf_token %}
-                         <i class="fas fa-sign-out-alt w-5"></i> <span class="font-medium">Sign out</span>
+                    <button type="submit" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 w-full">
+                        <i class="fas fa-sign-out-alt w-5"></i> <span class="font-medium">Sign out</span>
                     </button>
                 </form>
             </div>
