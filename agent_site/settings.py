@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     'apps.customer_panel',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://delala-2-sp04.onrender.com',
+]
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
