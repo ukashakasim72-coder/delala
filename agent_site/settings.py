@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'corsheaders',
-    'django_filter',
+    'django_filters',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
