@@ -34,7 +34,7 @@
             <!-- Property Name (Full Width) -->
             <div class="md:col-span-2">
                 <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Property Name *</label>
-                <input type="text" name="property_name" id="property_name" required value="{{ property.property_name|default:'' }}"
+                <input type="text" name="property_name" maxlength="20" id="property_name" required value="{{ property.property_name|default:'' }}"
                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
                        placeholder="e.g. Modern Luxury Villa">
                 <p id="property_name_error" class="text-red-500 text-xs mt-1 hidden">First character must be a letter</p>
@@ -43,7 +43,7 @@
             <!-- Price -->
             <div>
                 <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Price *</label>
-                <input type="text" name="price" id="price" required value="{{ property.price|default:'' }}"
+                <input type="text" name="price" maxlength="10" id="price" required value="{{ property.price|default:'' }}"
                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
                        placeholder="e.g. 18,000 birr">
                 <p id="price_error" class="text-red-500 text-xs mt-1 hidden">First character must be a number</p>
@@ -63,7 +63,7 @@
             <!-- Location (Full Width) -->
             <div class="md:col-span-2">
                 <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Location *</label>
-                <input type="text" name="location" required value="{{ property.location|default:'' }}"
+                <input type="text" name="location" maxlength="24" required value="{{ property.location|default:'' }}"
                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
                        placeholder="e.g. Bole, Addis Ababa">
             </div>
@@ -71,7 +71,7 @@
             <!-- Bedrooms -->
             <div>
                 <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bedrooms *</label>
-                <input type="text" name="bedrooms" id="bedrooms" required value="{{ property.bedrooms|default:'' }}"
+                <input type="text" name="bedrooms" maxlength="4" id="bedrooms" required value="{{ property.bedrooms|default:'' }}"
                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
                        placeholder="e.g. 3">
                 <p id="bedrooms_error" class="text-red-500 text-xs mt-1 hidden">Only numbers allowed</p>
@@ -79,8 +79,8 @@
 
             <!-- Bathrooms -->
             <div>
-                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Bathrooms *</label>
-                <input type="text" name="bathrooms" id="bathrooms" required value="{{ property.bathrooms|default:'' }}"
+                <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Rooms *</label>
+                <input type="text" name="bathrooms" maxlength="4" id="bathrooms" required value="{{ property.bathrooms|default:'' }}"
                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
                        placeholder="e.g. 2">
                 <p id="bathrooms_error" class="text-red-500 text-xs mt-1 hidden">Only numbers allowed</p>
@@ -89,7 +89,7 @@
             <!-- Square Meters -->
             <div class="md:col-span-2">
                 <label class="block font-bold text-[#0B1C3F] mb-2 ml-1">Square Meters *</label>
-                <input type="text" name="square_meters" id="square_meters" required value="{{ property.square_meters|default:'' }}"
+                <input type="text" name="square_meters" maxlength="6" id="square_meters" required value="{{ property.square_meters|default:'' }}"
                        class="w-full bg-[#F0F5FA] border-transparent rounded-2xl px-5 py-3 focus:ring-2 focus:ring-[#1DBF73] outline-none transition-all"
                        placeholder="e.g. 250">
                 <p id="square_meters_error" class="text-red-500 text-xs mt-1 hidden">Only numbers allowed</p>
