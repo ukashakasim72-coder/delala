@@ -17,7 +17,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
     'django.contrib.sites',
     'rest_framework',
     'rest_framework.authtoken',
@@ -30,8 +32,6 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.admin_panel',
     'apps.customer_panel',
-    'cloudinary_storage',
-    'cloudinary',
 ]
 
 MIDDLEWARE = [
