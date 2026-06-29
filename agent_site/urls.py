@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', include('apps.admin_panel.urls')),
     path('', include('apps.customer_panel.urls')),
     path('agent/', include('apps.accounts.urls')),
+    path('api/', include('apps.api.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
