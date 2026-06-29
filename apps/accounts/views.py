@@ -69,16 +69,15 @@ def dashboard_view(request):
 @login_required
 def add_property_view(request):
     if request.method == 'POST':
-        property_name = request.POST.get('property_name')
-        price = request.POST.get('price')
+        property_name = request.POST.get('property_name', '').strip()[:20]
+        price = request.POST.get('price', '').strip()[:10]
         property_type = request.POST.get('type')
-        location = request.POST.get('location')
-        bedrooms = request.POST.get('bedrooms')
-        description = request.POST.get('description')
-        bathrooms = request.POST.get('bathrooms')
-        square_meters = request.POST.get('square_meters')
+        location = request.POST.get('location', '').strip()[:24]
+        bedrooms = request.POST.get('bedrooms', '').strip()[:4]
+        description = request.POST.get('description', '').strip()
+        bathrooms = request.POST.get('bathrooms', '').strip()[:4]
+        square_meters = request.POST.get('square_meters', '').strip()[:6]
 
-        # ---- Numeric validation (only digits allowed) ----
         def is_numeric(value):
             return value.isdigit()
 
@@ -91,7 +90,6 @@ def add_property_view(request):
         for field_name, field_value in numeric_fields.items():
             if field_value and not is_numeric(field_value):
                 messages.error(request, f"{field_name.replace('_', ' ').title()} must contain only numbers.")
-                # Re‑render the form with the submitted data
                 return render(request, 'accounts/add_property.html', {
                     'property_name': property_name,
                     'price': price,
@@ -103,11 +101,11 @@ def add_property_view(request):
                     'square_meters': square_meters,
                 })
 
-        # Required fields validation
         if not property_name or not price or not property_type or not location or not bedrooms or not bathrooms or not square_meters:
             messages.error(request, "Please fill in all required fields.")
             return render(request, 'accounts/add_property.html')
 
+        # Get first available image as main image
         main_image = (
             request.FILES.get('add_img_1') or
             request.FILES.get('add_img_2') or
@@ -129,7 +127,6 @@ def add_property_view(request):
             status='Pending'
         )
 
-        from .models import PropertyImage
         image_keys = [
             ('add_img_1', 'front_image_name'),
             ('add_img_2', 'back_image_name'),
@@ -139,7 +136,7 @@ def add_property_view(request):
         for img_key, name_key in image_keys:
             file = request.FILES.get(img_key)
             if file:
-                caption = request.POST.get(name_key, '').strip()
+                caption = request.POST.get(name_key, '').strip()[:12]
                 PropertyImage.objects.create(
                     property=property_obj,
                     image=file,
@@ -150,6 +147,7 @@ def add_property_view(request):
         return redirect('listing')
 
     return render(request, 'accounts/add_property.html')
+
 
 @login_required
 def listing_view(request):
@@ -250,14 +248,14 @@ def edit_property_view(request, pk):
                 })
 
         # Update property fields
-        property_obj.property_name = property_name
-        property_obj.price = price
-        property_obj.property_type = property_type
-        property_obj.location = location
-        property_obj.bedrooms = bedrooms
-        property_obj.description = description
-        property_obj.bathrooms = bathrooms
-        property_obj.square_meters = square_meters
+        property_obj.property_name = request.POST.get('property_name', '').strip()[:20]
+        property_obj.price = request.POST.get('price', '').strip()[:10]
+        property_obj.property_type = request.POST.get('type')
+        property_obj.location = request.POST.get('location', '').strip()[:24]
+        property_obj.bedrooms = request.POST.get('bedrooms', '').strip()[:4]
+        property_obj.description = request.POST.get('description', '').strip()
+        property_obj.bathrooms = request.POST.get('bathrooms', '').strip()[:4]
+        property_obj.square_meters = request.POST.get('square_meters', '').strip()[:6]
 
         if property_obj.status == 'Rejected':
             property_obj.status = 'Pending'
@@ -277,7 +275,7 @@ def edit_property_view(request, pk):
         for img_key, name_key in image_keys:
             file = request.FILES.get(img_key)
             if file:
-                caption = request.POST.get(name_key, '').strip()
+                caption = request.POST.get(name_key, '').strip()[:12]
                 PropertyImage.objects.create(
                     property=property_obj,
                     image=file,
