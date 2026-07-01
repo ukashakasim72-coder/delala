@@ -7,7 +7,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-delala-secret-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '*',
+    '.vercel.app',
+    'localhost',
+    '127.0.0.1',
+]
 
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -72,7 +77,8 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://delala-2-sp04.onrender.com',
+    'https://*.vercel.app',
+    'https://https://delalalink3.vercel.app',
 ]
 
 ROOT_URLCONF = 'agent_site.urls'
@@ -99,7 +105,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
         conn_max_age=600,
-        ssl_require=False,
+        ssl_require=True,
     )
 }
 
